@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - TYPEORM_CONNECTION=postgres
+      - TYPEORM_HOST=db
+      - TYPEORM_PORT=5432
+      - TYPEORM_USERNAME=postgres
+      - TYPEORM_PASSWORD=1234
+      - TYPEORM_DATABASE=agendaplus
+      - TYPEORM_ENTITIES=dist/**/*.entity.js
+      - TYPEORM_MIGRATIONS=dist/shared/migrations/*.js
+      - TYPEORM_SYNCHRONIZE=true
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: agendaplus
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      retries: 5
+
+volumes:
+  pgdata:
