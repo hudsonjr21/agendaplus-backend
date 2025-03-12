@@ -10,8 +10,12 @@ export const AppDataSource = new DataSource({
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
   database: process.env.TYPEORM_DATABASE,
-  entities: [process.env.TYPEORM_ENTITIES],
-  migrations: [process.env.TYPEORM_MIGRATIONS],
+  entities: [
+    String(process.env.TYPEORM_ENTITIES || 'src/**/*.entity{.ts,.js}'),
+  ],
+  migrations: [
+    String(process.env.TYPEORM_MIGRATIONS || 'src/migration/**/*.ts'),
+  ],
   synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
 });
 

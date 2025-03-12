@@ -15,8 +15,18 @@ export class DataBaseConnectionService implements TypeOrmOptionsFactory {
       username: this.configService.get<string>('TYPEORM_USERNAME'),
       password: this.configService.get<string>('TYPEORM_PASSWORD'),
       database: this.configService.get<string>('TYPEORM_DATABASE'),
-      entities: [this.configService.get<string>('TYPEORM_ENTITIES')],
-      migrations: [this.configService.get<string>('TYPEORM_MIGRATIONS')],
+      entities: [
+        String(
+          this.configService.get<string>('TYPEORM_ENTITIES') ||
+            'src/**/*.entity{.ts,.js}',
+        ),
+      ],
+      migrations: [
+        String(
+          this.configService.get<string>('TYPEORM_MIGRATIONS') ||
+            'src/migration/**/*.ts',
+        ),
+      ],
       synchronize: this.configService.get<boolean>('TYPEORM_SYNCHRONIZE'),
       maxQueryExecutionTime: 1000,
       cache: false,
