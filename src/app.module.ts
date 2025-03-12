@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataBaseConnectionService } from './shared/databases/database-connection.service';
+import { DataBaseConnectionService } from './shared/databases/database-agendaplus-manager';
 import { ClienteModule } from './domain/usecases/cliente/cliente.module';
 
 @Module({
