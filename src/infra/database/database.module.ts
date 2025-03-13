@@ -4,6 +4,8 @@ import { ClienteRepository } from 'src/domain/repositories/database/cliente.repo
 import { ENTITIES } from 'src/infra/database/entities';
 import { ClienteImpl } from './postgres/cliente.impl';
 import { REPOSITORIES } from 'src/domain/repositories/database';
+import { FuncionarioRepository } from 'src/domain/repositories/database/funcionario.repository';
+import { FuncionarioImpl } from './postgres/funcionario.impl';
 
 @Global()
 @Module({
@@ -12,6 +14,10 @@ import { REPOSITORIES } from 'src/domain/repositories/database';
     {
       provide: ClienteRepository,
       useClass: ClienteImpl,
+    },
+    {
+      provide: FuncionarioRepository,
+      useClass: FuncionarioImpl,
     },
   ],
   exports: REPOSITORIES,
