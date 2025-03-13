@@ -69,6 +69,8 @@ export class AtendimentoImpl implements AtendimentoRepository {
   }
 
   async searchByDate(date: Date): Promise<Atendimento[]> {
-    return await this.atendimentoRepository.find({ where: { data: date } });
+    return await this.atendimentoRepository.find({
+      where: { data: date },
+    });
   }
 }
