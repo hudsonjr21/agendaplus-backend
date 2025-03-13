@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { SaveCliente } from 'src/domain/modules/usecases/process/cliente/save-cliente';
 import { ClienteDto } from '../dto/cliente.dto';
@@ -32,7 +33,14 @@ export class ClienteController {
 
   @Post()
   async createCliente(@Body() clienteDto: ClienteDto): Promise<Cliente> {
-    return this.saveCliente.createCliente(clienteDto);
+    try {
+      return await this.saveCliente.createCliente(clienteDto);
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        throw new ConflictException('CPF já cadastrado.');
+      }
+      throw error;
+    }
   }
 
   @Put(':id')

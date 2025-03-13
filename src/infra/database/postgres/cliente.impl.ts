@@ -4,6 +4,8 @@ import { ClienteRepository } from 'src/domain/repositories/database/cliente.repo
 import { DeleteResult, Repository, FindOneOptions } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReadStream } from 'typeorm/platform/PlatformTools';
+import { QueryFailedError } from 'typeorm';
+import { ConflictException } from '@nestjs/common';
 
 @Injectable()
 export class ClienteImpl implements ClienteRepository {
@@ -35,12 +37,17 @@ export class ClienteImpl implements ClienteRepository {
   }
 
   async save(cliente: Partial<Cliente>): Promise<Cliente> {
-    const exists = await this.get({ id: cliente.id });
-    if (exists) {
-      await this.clienteRepository.update({ id: cliente.id }, cliente);
-      return exists;
-    } else {
-      return await this.clienteRepository.save(cliente);
+    try {
+      const newCliente = this.clienteRepository.create(cliente);
+      return await this.clienteRepository.save(newCliente);
+    } catch (error) {
+      if (
+        error instanceof QueryFailedError &&
+        error.message.includes('UQ_980ea33e938c719bbababe43526')
+      ) {
+        throw new ConflictException('CPF já cadastrado.');
+      }
+      throw error;
     }
   }
 
