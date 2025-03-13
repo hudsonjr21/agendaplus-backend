@@ -15,7 +15,7 @@ services:
       - TYPEORM_DATABASE=agendaplus
       - TYPEORM_ENTITIES=dist/**/*.entity.js
       - TYPEORM_MIGRATIONS=dist/shared/migrations/*.js
-      - TYPEORM_SYNCHRONIZE=true
+      - TYPEORM_SYNCHRONIZE=false
     depends_on:
       - db
 
