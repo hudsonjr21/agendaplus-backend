@@ -1,34 +1,50 @@
 import {
   Controller,
-  // Get,
-  // Post,
-  // Body,
-  // Param,
-  // Put,
-  // Delete,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  NotFoundException,
 } from '@nestjs/common';
+import { SaveCliente } from 'src/domain/modules/usecases/process/cliente/save-cliente';
+import { ClienteDto } from '../dto/cliente.dto';
+import { Cliente } from 'src/domain/modules/entities/cliente.class';
 
 @Controller('clientes')
 export class ClienteController {
-  // constructor(private readonly clienteService: ClienteService) {}
-  // @Get()
-  // findAll(): Promise<Cliente[]> {
-  //   return this.clienteService.findAll();
-  // }
-  // @Get(':id')
-  // findOne(@Param('id') id: number): Promise<Cliente> {
-  //   return this.clienteService.findOne(id);
-  // }
-  // @Post()
-  // create(@Body() cliente: Cliente): Promise<Cliente> {
-  //   return this.clienteService.create(cliente);
-  // }
-  // @Put(':id')
-  // update(@Param('id') id: number, @Body() cliente: Cliente): Promise<Cliente> {
-  //   return this.clienteService.update(id, cliente);
-  // }
-  // @Delete(':id')
-  // remove(@Param('id') id: number): Promise<void> {
-  //   return this.clienteService.remove(id);
-  // }
+  constructor(private readonly saveCliente: SaveCliente) {}
+
+  @Get()
+  async getAllClientes(): Promise<Cliente[]> {
+    return this.saveCliente.getAllClientes();
+  }
+
+  @Get(':id')
+  async getClienteById(@Param('id') id: number): Promise<Cliente> {
+    const cliente = await this.saveCliente.getClienteById(id);
+    if (!cliente) {
+      throw new NotFoundException(`Cliente com ID ${id} não encontrado`);
+    }
+    return cliente;
+  }
+
+  @Post()
+  async createCliente(@Body() clienteDto: ClienteDto): Promise<Cliente> {
+    return this.saveCliente.createCliente(clienteDto);
+  }
+
+  @Put(':id')
+  async updateCliente(
+    @Param('id') id: number,
+    @Body() clienteDto: ClienteDto,
+  ): Promise<any> {
+    return this.saveCliente.updateCliente(id, clienteDto);
+  }
+
+  @Delete(':id')
+  async deleteCliente(@Param('id') id: number): Promise<any> {
+    return this.saveCliente.deleteCliente(id);
+  }
 }

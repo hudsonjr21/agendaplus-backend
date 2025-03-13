@@ -4,4 +4,5 @@ import { ReadStream } from 'typeorm/platform/PlatformTools';
 
 export abstract class ClienteRepository extends DefaultRepository<Cliente> {
   abstract getStream: (filters: Partial<Cliente>) => Promise<ReadStream>;
+  abstract get: (filters: Partial<Cliente>) => Promise<Cliente | null>;
 }
