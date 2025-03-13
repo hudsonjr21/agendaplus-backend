@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Funcionario } from './funcionario.entity';
 import { Servico } from './servico.entity';
+import { Cliente } from './cliente.entity';
 
 @Entity('agenda')
 export class Agenda {
@@ -19,6 +20,10 @@ export class Agenda {
   @ManyToOne(() => Funcionario)
   @JoinColumn({ name: 'funcionario_id' })
   funcionario: Funcionario;
+
+  @ManyToOne(() => Cliente)
+  @JoinColumn({ name: 'cliente_id' })
+  cliente: Cliente;
 
   @Column({ name: 'data', type: 'date' })
   data: Date;

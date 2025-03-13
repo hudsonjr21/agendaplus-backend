@@ -32,9 +32,6 @@ export class Atendimento {
   @Column({ name: 'data', type: 'date' })
   data: Date;
 
-  @Column({ name: 'horario', type: 'varchar', length: 20 })
-  horario: string;
-
   @Column({ name: 'foto', type: 'varchar', length: 255, nullable: true })
   foto: string;
 

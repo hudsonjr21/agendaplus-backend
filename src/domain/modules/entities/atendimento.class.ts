@@ -8,7 +8,6 @@ export class Atendimento {
   funcionario: Funcionario;
   servico: Servico;
   data: Date;
-  horario: string;
   foto?: string;
   createdAt?: Date;
   updatedAt?: Date;

@@ -6,6 +6,8 @@ import { ClienteImpl } from './postgres/cliente.impl';
 import { REPOSITORIES } from 'src/domain/repositories/database';
 import { FuncionarioRepository } from 'src/domain/repositories/database/funcionario.repository';
 import { FuncionarioImpl } from './postgres/funcionario.impl';
+import { AgendaRepository } from 'src/domain/repositories/database/agenda.repository';
+import { AgendaImpl } from './postgres/agenda.impl';
 
 @Global()
 @Module({
@@ -18,6 +20,10 @@ import { FuncionarioImpl } from './postgres/funcionario.impl';
     {
       provide: FuncionarioRepository,
       useClass: FuncionarioImpl,
+    },
+    {
+      provide: AgendaRepository,
+      useClass: AgendaImpl,
     },
   ],
   exports: REPOSITORIES,
