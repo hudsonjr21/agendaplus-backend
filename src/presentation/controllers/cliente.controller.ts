@@ -6,8 +6,10 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { SaveCliente } from 'src/domain/modules/usecases/process/cliente/save-cliente';
 import { ClienteDto } from '../dto/cliente.dto';
@@ -18,7 +20,10 @@ export class ClienteController {
   constructor(private readonly saveCliente: SaveCliente) {}
 
   @Get()
-  async getAllClientes(): Promise<Cliente[]> {
+  async getAllClientes(@Query() query: any): Promise<Cliente[]> {
+    if (Object.keys(query).length) {
+      return this.saveCliente.searchClientes(query);
+    }
     return this.saveCliente.getAllClientes();
   }
 
@@ -48,7 +53,17 @@ export class ClienteController {
     @Param('id') id: number,
     @Body() clienteDto: ClienteDto,
   ): Promise<any> {
-    return this.saveCliente.updateCliente(id, clienteDto);
+    try {
+      return await this.saveCliente.updateCliente(id, clienteDto);
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        throw new ConflictException('CPF já cadastrado.');
+      }
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 
   @Delete(':id')

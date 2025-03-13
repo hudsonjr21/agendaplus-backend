@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cliente } from '../entities/cliente.entity';
 import { ClienteRepository } from 'src/domain/repositories/database/cliente.repository';
-import { DeleteResult, Repository, FindOneOptions } from 'typeorm';
+import { DeleteResult, Repository, FindOneOptions, Like } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReadStream } from 'typeorm/platform/PlatformTools';
 import { QueryFailedError } from 'typeorm';
@@ -43,9 +43,12 @@ export class ClienteImpl implements ClienteRepository {
     } catch (error) {
       if (
         error instanceof QueryFailedError &&
-        error.message.includes('UQ_980ea33e938c719bbababe43526')
+        (error as any).code === '23505'
       ) {
-        throw new ConflictException('CPF já cadastrado.');
+        const message = (error as any).detail;
+        if (message.includes('cpf')) {
+          throw new ConflictException('CPF já cadastrado.');
+        }
       }
       throw error;
     }
@@ -56,5 +59,34 @@ export class ClienteImpl implements ClienteRepository {
     filters: Partial<Cliente>,
   ): Promise<any> {
     return await this.clienteRepository.update(filters, cliente);
+  }
+
+  async find(filters: any): Promise<Cliente[]> {
+    return await this.clienteRepository.find({ where: filters });
+  }
+
+  async searchByName(name: string): Promise<Cliente[]> {
+    return await this.clienteRepository.find({
+      where: [
+        { nomeCompleto: Like(`%${name}%`) },
+        { nomeSocial: Like(`%${name}%`) },
+      ],
+    });
+  }
+
+  async searchByCPF(cpf: string): Promise<Cliente | null> {
+    return await this.clienteRepository.findOne({ where: { cpf } });
+  }
+
+  async searchByCity(city: string): Promise<Cliente[]> {
+    return await this.clienteRepository.find({
+      where: { cidade: Like(`%${city}%`) },
+    });
+  }
+
+  async searchByState(state: string): Promise<Cliente[]> {
+    return await this.clienteRepository.find({
+      where: { estado: Like(`%${state}%`) },
+    });
   }
 }
