@@ -1,23 +1,27 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './infra/database/database.module';
+import { DomainModule } from './domain/domain.module';
+import { PresentationModule } from './presentation/presentation.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataBaseConnectionService } from './shared/databases/database-agendaplus-manager';
-import { ClienteModule } from './domain/usecases/cliente/cliente.module';
+import { EmptyBodyMiddleware } from './presentation/middleware/intercept-data.middleware';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useClass: DataBaseConnectionService,
     }),
-    // Importe outros módulos aqui
-    ClienteModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    DatabaseModule,
+    DomainModule,
+    PresentationModule,
   ],
   controllers: [],
   providers: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // Adicione middlewares aqui, se necessário
+    consumer.apply(EmptyBodyMiddleware).forRoutes('*');
   }
 }

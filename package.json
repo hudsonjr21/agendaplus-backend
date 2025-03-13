@@ -18,8 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
-    "migration:generate": "typeorm migration:generate -d ./ormconfig.ts src/shared/migrations/InitialMigration",
-    "migration:run": "typeorm migration:run -d ./ormconfig.ts"
+    "alert:migration:down": "yarn typeorm schema:drop -d ./ormconfig.ts && yarn typeorm migration:revert -d ./ormconfig.ts",
+    "alert:migration:generate": "yarn build && yarn typeorm schema:drop -d ./ormconfig.ts && yarn typeorm migration:generate -d ./ormconfig.ts -n Migration",
+    "alert:migration:run": "yarn typeorm schema:drop -d ./ormconfig.ts && yarn typeorm migration:run -d ./ormconfig.ts && yarn typeorm schema:sync -d ./ormconfig.ts && yarn start:dev"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -28,6 +29,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.0",
     "@types/uuid": "^10.0.0",
+    "Logger": "^0.0.0",
     "dotenv": "^16.4.7",
     "pg": "^8.14.0",
     "reflect-metadata": "^0.2.2",
