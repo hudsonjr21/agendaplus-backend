@@ -80,17 +80,29 @@ export class SaveAgenda {
       );
     }
 
-    // Verificar se a agenda já existe
-    const existingAgenda = await this.agendaRepository.find({
-      cliente: agenda.cliente,
+    // Verificar se o funcionário já tem uma agenda no mesmo horário
+    const existingFuncionarioAgenda = await this.agendaRepository.find({
       funcionario: agenda.funcionario,
       data: agenda.data,
       horario: agenda.horario,
     });
 
-    if (existingAgenda.length > 0) {
+    if (existingFuncionarioAgenda.length > 0) {
       throw new ConflictException(
-        'Agenda já existe para o horário, cliente e funcionário especificados.',
+        `Funcionário com ID ${agenda.funcionario.id} já tem uma agenda no horário ${agenda.horario} na data ${agenda.data}.`,
+      );
+    }
+
+    // Verificar se o cliente já tem uma agenda com outro funcionário no mesmo horário
+    const existingClienteAgenda = await this.agendaRepository.find({
+      cliente: agenda.cliente,
+      data: agenda.data,
+      horario: agenda.horario,
+    });
+
+    if (existingClienteAgenda.length > 0) {
+      throw new ConflictException(
+        `Cliente com ID ${agenda.cliente.id} já tem uma agenda no horário ${agenda.horario} na data ${agenda.data} com outro funcionário.`,
       );
     }
 
