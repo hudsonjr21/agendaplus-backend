@@ -65,11 +65,11 @@ export class SaveServico {
 
   async searchServicos(query: any): Promise<Servico[]> {
     this.logger.log(`Searching serviços with query: ${JSON.stringify(query)}`);
-    const { descricao } = query;
+    const { nome } = query;
     let filters = {};
 
-    if (descricao) {
-      filters = { descricao: descricao };
+    if (nome) {
+      filters = { nome: nome };
     }
 
     return await this.servicoRepository.find(filters);

@@ -12,6 +12,9 @@ export class Servico {
   @PrimaryGeneratedColumn({ name: 'id', type: 'bigint' })
   id: number;
 
+  @Column({ name: 'nome', type: 'varchar', length: 100 })
+  nome: string;
+
   @Column({ name: 'descricao', type: 'varchar', length: 255 })
   descricao: string;
 
