@@ -80,4 +80,8 @@ export class AtendimentoImpl implements AtendimentoRepository {
       relations: ['cliente', 'funcionario', 'servico', 'agenda'], // Incluir relações
     });
   }
+
+  async getById(id: number): Promise<Atendimento | null> {
+    return await this.atendimentoRepository.findOne({ where: { id } });
+  }
 }

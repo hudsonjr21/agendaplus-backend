@@ -67,4 +67,8 @@ export class DespesaImpl implements DespesaRepository {
   async find(filters: any): Promise<Despesa[]> {
     return await this.despesaRepository.find({ where: filters });
   }
+
+  async getById(id: number): Promise<Despesa | null> {
+    return await this.despesaRepository.findOne({ where: { id } });
+  }
 }

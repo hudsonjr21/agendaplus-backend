@@ -1,8 +1,14 @@
-import { Injectable, Logger, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CaixaImpl } from 'src/infra/database/postgres/caixa.impl';
 import { TransacaoImpl } from 'src/infra/database/postgres/transacao.impl';
 import { AtendimentoImpl } from 'src/infra/database/postgres/atendimento.impl';
 import { DespesaImpl } from 'src/infra/database/postgres/despesa.impl';
+import { Caixa } from 'src/infra/database/entities/caixa.entity';
 
 @Injectable()
 export class SaveCaixa {
@@ -68,5 +74,29 @@ export class SaveCaixa {
 
     await this.transacaoRepository.save(transacao);
     await this.atualizarSaldoCaixa();
+  }
+
+  async createCaixa(caixa: Partial<Caixa>): Promise<Caixa> {
+    return await this.caixaRepository.save(caixa);
+  }
+
+  async getAllCaixas(): Promise<Caixa[]> {
+    return await this.caixaRepository.getAllCaixas();
+  }
+
+  async getCaixaById(id: number): Promise<Caixa> {
+    const caixa = await this.caixaRepository.getCaixaById(id);
+    if (!caixa) {
+      throw new NotFoundException(`Caixa com ID ${id} não encontrada`);
+    }
+    return caixa;
+  }
+
+  async updateCaixa(id: number, caixa: Partial<Caixa>): Promise<Caixa> {
+    return await this.caixaRepository.updateCaixa(id, caixa);
+  }
+
+  async deleteCaixa(id: number): Promise<void> {
+    await this.caixaRepository.deleteCaixa(id);
   }
 }

@@ -1,60 +1,71 @@
 import { Injectable } from '@nestjs/common';
 import { Caixa } from '../entities/caixa.entity';
-import { CaixaRepository } from 'src/domain/repositories/database/caixa.repository';
-import { DeleteResult, Repository, FindOneOptions } from 'typeorm';
+import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError } from 'typeorm';
-import { ConflictException } from '@nestjs/common';
-import { ReadStream } from 'typeorm/platform/PlatformTools';
 
 @Injectable()
-export class CaixaImpl implements CaixaRepository {
+export class CaixaImpl {
   constructor(
     @InjectRepository(Caixa)
     private readonly caixaRepository: Repository<Caixa>,
+    private readonly connection: Connection,
   ) {}
 
-  async getStream(filters: Partial<Caixa>): Promise<ReadStream> {
-    const myStream = this.caixaRepository.createQueryBuilder('caixa');
-    if (filters) {
-      myStream.where(filters);
+  async updateSaldo(caixa: Partial<Caixa>): Promise<Caixa> {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const updatedCaixa = await queryRunner.manager.save(Caixa, caixa);
+      await queryRunner.commitTransaction();
+      return updatedCaixa;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-    return myStream.stream();
   }
 
-  async delete(id: string): Promise<DeleteResult> {
-    return await this.caixaRepository.softDelete(id);
-  }
-
-  async get(filters: Partial<Caixa>): Promise<Caixa | null> {
-    return await this.caixaRepository.findOne({
-      where: filters,
-    } as FindOneOptions<Caixa>);
-  }
-
-  async getAll(): Promise<Caixa[]> {
-    return await this.caixaRepository.find();
+  async createCaixa(caixa: Partial<Caixa>): Promise<Caixa> {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const newCaixa = this.caixaRepository.create(caixa);
+      const savedCaixa = await queryRunner.manager.save(newCaixa);
+      await queryRunner.commitTransaction();
+      return savedCaixa;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async save(caixa: Partial<Caixa>): Promise<Caixa> {
-    try {
-      const newCaixa = this.caixaRepository.create(caixa);
-      return await this.caixaRepository.save(newCaixa);
-    } catch (error) {
-      if (
-        error instanceof QueryFailedError &&
-        (error as any).code === '23505'
-      ) {
-        const message = (error as any).detail;
-        if (message.includes('descricao')) {
-          throw new ConflictException('Descrição já cadastrada.');
-        }
-      }
-      throw error;
-    }
+    return await this.caixaRepository.save(caixa);
   }
 
-  async update(caixa: Partial<Caixa>, filters: Partial<Caixa>): Promise<any> {
-    return await this.caixaRepository.update(filters, caixa);
+  async getAllCaixas(): Promise<Caixa[]> {
+    return await this.caixaRepository.find();
+  }
+
+  async getCaixaById(id: number): Promise<Caixa | null> {
+    return await this.caixaRepository.findOne({ where: { id } });
+  }
+
+  async updateCaixa(id: number, caixa: Partial<Caixa>): Promise<Caixa> {
+    await this.caixaRepository.update(id, caixa);
+    const updatedCaixa = await this.getCaixaById(id);
+    if (!updatedCaixa) {
+      throw new Error(`Caixa com ID ${id} não encontrada`);
+    }
+    return updatedCaixa;
+  }
+
+  async deleteCaixa(id: number): Promise<void> {
+    await this.caixaRepository.delete(id);
   }
 }

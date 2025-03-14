@@ -85,4 +85,13 @@ export class TransacaoImpl implements TransacaoRepository {
       where: { data },
     });
   }
+
+  async sumByTipo(tipo: string): Promise<number> {
+    const result = await this.transacaoRepository
+      .createQueryBuilder('transacao')
+      .select('SUM(transacao.valor)', 'sum')
+      .where('transacao.tipo = :tipo', { tipo })
+      .getRawOne();
+    return parseFloat(result.sum);
+  }
 }
