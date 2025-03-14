@@ -240,16 +240,17 @@ export class SaveAgenda {
     await queryRunner.startTransaction();
 
     try {
-      const deleteResult = await this.agendaRepository.delete(id.toString());
-
-      // Excluir o atendimento associado à agenda
+      // Marcar o atendimento associado como deletado (soft delete)
       const atendimento = await this.atendimentoRepository.get({
         agenda: agenda,
       } as Partial<Atendimento>);
       if (atendimento) {
-        await this.atendimentoRepository.delete(atendimento.id.toString());
-        this.logger.log(`Atendimento deleted with ID: ${atendimento.id}`);
+        await queryRunner.manager.softDelete(Atendimento, atendimento.id);
+        this.logger.log(`Atendimento soft deleted with ID: ${atendimento.id}`);
       }
+
+      // Marcar a agenda como deletada (soft delete)
+      const deleteResult = await queryRunner.manager.softDelete(Agenda, id);
 
       await queryRunner.commitTransaction();
       return deleteResult;
