@@ -5,6 +5,7 @@ import { DeleteResult, Repository, FindOneOptions } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError } from 'typeorm';
 import { ConflictException } from '@nestjs/common';
+import { ReadStream } from 'typeorm/platform/PlatformTools';
 
 @Injectable()
 export class CaixaImpl implements CaixaRepository {
@@ -12,6 +13,14 @@ export class CaixaImpl implements CaixaRepository {
     @InjectRepository(Caixa)
     private readonly caixaRepository: Repository<Caixa>,
   ) {}
+
+  async getStream(filters: Partial<Caixa>): Promise<ReadStream> {
+    const myStream = this.caixaRepository.createQueryBuilder('caixa');
+    if (filters) {
+      myStream.where(filters);
+    }
+    return myStream.stream();
+  }
 
   async delete(id: string): Promise<DeleteResult> {
     return await this.caixaRepository.softDelete(id);

@@ -7,9 +7,9 @@ export class Transacao {
   valor: number;
   tipo: string;
   descricao: string;
-  caixaId: Caixa;
-  atendimentoId?: Atendimento;
-  despesaId?: Despesa;
+  caixa: Caixa;
+  atendimento?: Atendimento;
+  despesa?: Despesa;
   data: Date;
   createdAt?: Date;
   updatedAt?: Date;
