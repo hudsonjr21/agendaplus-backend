@@ -2,10 +2,13 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
+import { Caixa } from './caixa.entity';
 
 @Entity('despesa')
 export class Despesa {
@@ -20,6 +23,10 @@ export class Despesa {
 
   @Column({ name: 'data', type: 'date' })
   data: Date;
+
+  @ManyToOne(() => Caixa, (caixa) => caixa.despesas)
+  @JoinColumn({ name: 'caixa_id' })
+  caixa: Caixa;
 
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at', select: false })
   createdAt?: Date;

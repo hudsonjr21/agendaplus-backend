@@ -22,13 +22,6 @@ export class AgendaController {
   @Get()
   async getAllAgendas(@Query() query: any): Promise<Agenda[]> {
     if (Object.keys(query).length) {
-      if (query.data) {
-        const date = new Date(query.data);
-        if (isNaN(date.getTime())) {
-          throw new BadRequestException('Data inválida');
-        }
-        return this.saveAgenda.searchAgendasByDate(date);
-      }
       return this.saveAgenda.searchAgendas(query);
     }
     return this.saveAgenda.getAllAgendas();

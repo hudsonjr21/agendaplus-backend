@@ -30,11 +30,14 @@ export class AtendimentoImpl implements AtendimentoRepository {
   async get(filters: Partial<Atendimento>): Promise<Atendimento | null> {
     return await this.atendimentoRepository.findOne({
       where: filters,
+      relations: ['cliente', 'funcionario', 'servico', 'agenda'], // Incluir relações
     } as FindOneOptions<Atendimento>);
   }
 
   async getAll(): Promise<Atendimento[]> {
-    return await this.atendimentoRepository.find();
+    return await this.atendimentoRepository.find({
+      relations: ['cliente', 'funcionario', 'servico', 'agenda'], // Incluir relações
+    });
   }
 
   async save(atendimento: Partial<Atendimento>): Promise<Atendimento> {
@@ -65,12 +68,16 @@ export class AtendimentoImpl implements AtendimentoRepository {
   }
 
   async find(filters: any): Promise<Atendimento[]> {
-    return await this.atendimentoRepository.find({ where: filters });
+    return await this.atendimentoRepository.find({
+      where: filters,
+      relations: ['cliente', 'funcionario', 'servico', 'agenda'], // Incluir relações
+    });
   }
 
   async searchByDate(date: Date): Promise<Atendimento[]> {
     return await this.atendimentoRepository.find({
       where: { data: date },
+      relations: ['cliente', 'funcionario', 'servico', 'agenda'], // Incluir relações
     });
   }
 }

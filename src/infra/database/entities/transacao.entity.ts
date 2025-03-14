@@ -40,6 +40,7 @@ export class Transacao {
 
   @Column({ name: 'data', type: 'timestamptz' })
   data: Date;
+
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at', select: false })
   createdAt?: Date;
 

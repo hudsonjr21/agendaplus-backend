@@ -82,4 +82,9 @@ export class SaveAtendimento {
 
     return await this.atendimentoRepository.find(filters);
   }
+
+  async searchAtendimentosByDate(date: Date): Promise<Atendimento[]> {
+    this.logger.log(`Searching atendimentos by date: ${date}`);
+    return this.atendimentoRepository.searchByDate(date);
+  }
 }
