@@ -15,7 +15,7 @@ export class Servico {
   @Column({ name: 'nome', type: 'varchar', length: 100 })
   nome: string;
 
-  @Column({ name: 'descricao', type: 'varchar', length: 255 })
+  @Column({ name: 'descricao', type: 'varchar', length: 1000 })
   descricao: string;
 
   @Column({ name: 'preco', type: 'numeric', precision: 12, scale: 2 })

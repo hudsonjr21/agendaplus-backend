@@ -31,8 +31,10 @@ export class SaveServico {
       return createdServico;
     } catch (error) {
       if (error instanceof ConflictException) {
-        throw new ConflictException('Erro ao criar o serviço.');
+        this.logger.error(`Erro ao criar o serviço: ${error.message}`);
+        throw new ConflictException(error.message);
       }
+      this.logger.error(`Erro ao criar o serviço: ${error.message}`);
       throw error;
     }
   }
@@ -69,7 +71,7 @@ export class SaveServico {
     let filters = {};
 
     if (nome) {
-      filters = { nome: nome };
+      filters = { nome: `%${nome}%` }; // Usar LIKE para busca parcial
     }
 
     return await this.servicoRepository.find(filters);

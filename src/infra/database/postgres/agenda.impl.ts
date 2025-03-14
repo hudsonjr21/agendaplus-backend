@@ -29,11 +29,14 @@ export class AgendaImpl implements AgendaRepository {
   async get(filters: Partial<Agenda>): Promise<Agenda | null> {
     return await this.agendaRepository.findOne({
       where: filters,
+      relations: ['funcionario', 'cliente', 'servico'], // Incluir relações
     } as FindOneOptions<Agenda>);
   }
 
   async getAll(): Promise<Agenda[]> {
-    return await this.agendaRepository.find();
+    return await this.agendaRepository.find({
+      relations: ['funcionario', 'cliente', 'servico'],
+    }); // Incluir relações
   }
 
   async save(agenda: Partial<Agenda>): Promise<Agenda> {
@@ -64,10 +67,16 @@ export class AgendaImpl implements AgendaRepository {
   }
 
   async find(filters: any): Promise<Agenda[]> {
-    return await this.agendaRepository.find({ where: filters });
+    return await this.agendaRepository.find({
+      where: filters,
+      relations: ['funcionario', 'cliente', 'servico'], // Incluir relações
+    });
   }
 
   async searchByDate(date: Date): Promise<Agenda[]> {
-    return await this.agendaRepository.find({ where: { data: date } });
+    return await this.agendaRepository.find({
+      where: { data: date },
+      relations: ['funcionario', 'cliente', 'servico'], // Incluir relações
+    });
   }
 }

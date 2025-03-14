@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Servico } from '../entities/servico.entity';
-import { DeleteResult, Repository, FindOneOptions, Connection } from 'typeorm';
+import {
+  DeleteResult,
+  Repository,
+  FindOneOptions,
+  Connection,
+  Like,
+} from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError } from 'typeorm';
 import { ConflictException } from '@nestjs/common';
@@ -35,12 +41,26 @@ export class ServicoImpl implements ServicoRepository {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      // Adicionar log para verificar a existência de duplicatas
+      console.log(
+        `Verificando existência de serviço com nome: ${servico.nome}`,
+      );
+      const existingServico = await this.servicoRepository.findOne({
+        where: { nome: servico.nome },
+      });
+
+      if (existingServico) {
+        throw new ConflictException('Serviço com este nome já existe.');
+      }
+
       const newServico = this.servicoRepository.create(servico);
       const savedServico = await queryRunner.manager.save(newServico);
       await queryRunner.commitTransaction();
+      console.log(`Serviço salvo com sucesso: ${savedServico.id}`);
       return savedServico;
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      console.error(`Erro ao salvar o serviço: ${error.message}`);
       if (error instanceof QueryFailedError) {
         throw new ConflictException('Erro ao salvar o serviço.');
       }
@@ -58,6 +78,9 @@ export class ServicoImpl implements ServicoRepository {
   }
 
   async find(filters: any): Promise<Servico[]> {
+    if (filters.nome) {
+      filters.nome = Like(filters.nome); // Usar operador LIKE para busca parcial
+    }
     return await this.servicoRepository.find({ where: filters });
   }
 
