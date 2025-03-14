@@ -4,4 +4,5 @@ export class AtendimentoDto {
   servicoId: number;
   data: Date;
   foto?: string;
+  observacao?: string;
 }

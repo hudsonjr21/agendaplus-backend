@@ -1,3 +1,4 @@
+import { Cliente } from './cliente.class';
 import { Funcionario } from './funcionario.class';
 import { Servico } from './servico.class';
 
@@ -7,6 +8,7 @@ export class Agenda {
   data: Date;
   horario: string;
   servico: Servico;
+  cliente: Cliente;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

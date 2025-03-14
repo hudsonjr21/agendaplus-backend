@@ -11,7 +11,9 @@ export const AppDataSource = new DataSource({
   password: process.env.TYPEORM_PASSWORD,
   database: process.env.TYPEORM_DATABASE,
   entities: ENTITIES,
-  migrations: [process.env.TYPEORM_MIGRATIONS || 'dist/shared/migrations/*.js'],
+  migrations: [
+    process.env.TYPEORM_MIGRATIONS || 'dist/src/shared/migrations/*.js',
+  ],
   synchronize: process.env.TYPEORM_SYNCHRONIZE === 'false',
   logging: true,
 });

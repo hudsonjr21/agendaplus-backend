@@ -3,4 +3,5 @@ export class AgendaDto {
   data: Date;
   horario: string;
   servicoId: number;
+  clienteId: number;
 }

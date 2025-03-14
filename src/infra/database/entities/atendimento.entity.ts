@@ -35,6 +35,9 @@ export class Atendimento {
   @Column({ name: 'foto', type: 'varchar', length: 255, nullable: true })
   foto: string;
 
+  @Column({ name: 'observacao', type: 'varchar', length: 500, nullable: true })
+  observacao: string;
+
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at', select: false })
   createdAt?: Date;
 

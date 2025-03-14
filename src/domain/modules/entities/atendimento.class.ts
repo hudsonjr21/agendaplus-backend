@@ -9,6 +9,7 @@ export class Atendimento {
   servico: Servico;
   data: Date;
   foto?: string;
+  observacao?: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
