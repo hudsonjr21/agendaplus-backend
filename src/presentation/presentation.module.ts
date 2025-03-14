@@ -4,6 +4,7 @@ import { ClienteController } from './controllers/cliente.controller';
 import { FuncionarioController } from './controllers/funcionario.controller';
 import { AgendaController } from './controllers/agenda.controller';
 import { AtendimentoController } from './controllers/atendimento.controller';
+import { ServicoController } from './controllers/servico.controller';
 
 @Module({
   imports: [DomainModule],
@@ -12,6 +13,7 @@ import { AtendimentoController } from './controllers/atendimento.controller';
     FuncionarioController,
     AgendaController,
     AtendimentoController,
+    ServicoController,
   ],
   providers: [],
   exports: [],

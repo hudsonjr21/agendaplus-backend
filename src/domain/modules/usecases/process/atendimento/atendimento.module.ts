@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Agenda } from 'src/infra/database/entities/agenda.entity';
-import { SaveAtendimento } from './save-atendimento';
+import { Atendimento } from 'src/infra/database/entities/atendimento.entity';
 import { AtendimentoImpl } from 'src/infra/database/postgres/atendimento.impl';
+import { SaveAtendimento } from 'src/domain/modules/usecases/process/atendimento/save-atendimento';
+import { AtendimentoController } from 'src/presentation/controllers/atendimento.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Agenda])],
-  providers: [SaveAtendimento, AtendimentoImpl],
-  exports: [SaveAtendimento],
+  imports: [TypeOrmModule.forFeature([Atendimento])],
+  providers: [AtendimentoImpl, SaveAtendimento],
+  controllers: [AtendimentoController],
+  exports: [AtendimentoImpl, SaveAtendimento],
 })
 export class AtendimentoModule {}

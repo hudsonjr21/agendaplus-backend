@@ -10,6 +10,8 @@ import { AgendaRepository } from 'src/domain/repositories/database/agenda.reposi
 import { AgendaImpl } from './postgres/agenda.impl';
 import { AtendimentoRepository } from 'src/domain/repositories/database/atendimento.repository';
 import { AtendimentoImpl } from './postgres/atendimento.impl';
+import { ServicoImpl } from './postgres/servico.impl';
+import { ServicoRepository } from 'src/domain/repositories/database/servico.repository';
 
 @Global()
 @Module({
@@ -30,6 +32,10 @@ import { AtendimentoImpl } from './postgres/atendimento.impl';
     {
       provide: AtendimentoRepository,
       useClass: AtendimentoImpl,
+    },
+    {
+      provide: ServicoRepository,
+      useClass: ServicoImpl,
     },
   ],
   exports: REPOSITORIES,
