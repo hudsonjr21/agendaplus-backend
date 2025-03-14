@@ -4,6 +4,7 @@ import { FuncinarioModule } from './modules/usecases/process/funcionario/funcion
 import { AgendaModule } from './modules/usecases/process/agenda/agenda.module';
 import { AtendimentoModule } from './modules/usecases/process/atendimento/atendimento.module';
 import { ServicoModule } from './modules/usecases/process/servico/servico.module';
+import { DespesaModule } from './modules/usecases/process/despesa/despesa.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ServicoModule } from './modules/usecases/process/servico/servico.module
     AgendaModule,
     AtendimentoModule,
     ServicoModule,
+    DespesaModule,
   ],
   exports: [
     ClienteModule,
@@ -19,6 +21,7 @@ import { ServicoModule } from './modules/usecases/process/servico/servico.module
     AgendaModule,
     AtendimentoModule,
     ServicoModule,
+    DespesaModule,
   ],
 })
 export class DomainModule {}

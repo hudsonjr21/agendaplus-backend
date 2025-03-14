@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError } from 'typeorm';
 import { ConflictException } from '@nestjs/common';
 import { DespesaRepository } from 'src/domain/repositories/database/despesa.repository';
+import { ReadStream } from 'typeorm/platform/PlatformTools';
 
 @Injectable()
 export class DespesaImpl implements DespesaRepository {
@@ -13,6 +14,14 @@ export class DespesaImpl implements DespesaRepository {
     private readonly despesaRepository: Repository<Despesa>,
     private readonly connection: Connection,
   ) {}
+
+  async getStream(filters: Partial<Despesa>): Promise<ReadStream> {
+    const myStream = this.despesaRepository.createQueryBuilder('despesa');
+    if (filters) {
+      myStream.where(filters);
+    }
+    return myStream.stream();
+  }
 
   async delete(id: string): Promise<DeleteResult> {
     return await this.despesaRepository.softDelete(id);

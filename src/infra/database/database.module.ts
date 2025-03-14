@@ -12,6 +12,8 @@ import { AtendimentoRepository } from 'src/domain/repositories/database/atendime
 import { AtendimentoImpl } from './postgres/atendimento.impl';
 import { ServicoImpl } from './postgres/servico.impl';
 import { ServicoRepository } from 'src/domain/repositories/database/servico.repository';
+import { DespesaRepository } from 'src/domain/repositories/database/despesa.repository';
+import { DespesaImpl } from './postgres/despesa.impl';
 
 @Global()
 @Module({
@@ -36,6 +38,10 @@ import { ServicoRepository } from 'src/domain/repositories/database/servico.repo
     {
       provide: ServicoRepository,
       useClass: ServicoImpl,
+    },
+    {
+      provide: DespesaRepository,
+      useClass: DespesaImpl,
     },
   ],
   exports: REPOSITORIES,
