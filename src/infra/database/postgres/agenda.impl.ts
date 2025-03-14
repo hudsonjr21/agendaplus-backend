@@ -14,6 +14,10 @@ export class AgendaImpl implements AgendaRepository {
     private readonly connection: Connection,
   ) {}
 
+  getConnection(): Connection {
+    return this.connection;
+  }
+
   async getStream(filters: Partial<Agenda>): Promise<any> {
     const myStream = this.agendaRepository.createQueryBuilder('agenda');
     if (filters) {

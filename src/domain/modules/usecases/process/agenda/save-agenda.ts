@@ -8,6 +8,9 @@ import { AgendaImpl } from 'src/infra/database/postgres/agenda.impl';
 import { Agenda } from 'src/infra/database/entities/agenda.entity';
 import { AtendimentoImpl } from 'src/infra/database/postgres/atendimento.impl';
 import { Atendimento } from 'src/infra/database/entities/atendimento.entity';
+import { ClienteImpl } from 'src/infra/database/postgres/cliente.impl';
+import { FuncionarioImpl } from 'src/infra/database/postgres/funcionario.impl';
+import { ServicoImpl } from 'src/infra/database/postgres/servico.impl';
 
 @Injectable()
 export class SaveAgenda {
@@ -16,6 +19,9 @@ export class SaveAgenda {
   constructor(
     private readonly agendaRepository: AgendaImpl,
     private readonly atendimentoRepository: AtendimentoImpl,
+    private readonly clienteRepository: ClienteImpl,
+    private readonly funcionarioRepository: FuncionarioImpl,
+    private readonly servicoRepository: ServicoImpl,
   ) {}
 
   async getAllAgendas(): Promise<Agenda[]> {
@@ -30,8 +36,72 @@ export class SaveAgenda {
 
   async createAgenda(agenda: Partial<Agenda>): Promise<Agenda> {
     this.logger.log(`Creating agenda: ${JSON.stringify(agenda)}`);
+
+    // Verificar se as propriedades existem
+    if (!agenda.cliente || !agenda.cliente.id) {
+      throw new BadRequestException('Cliente não especificado.');
+    }
+    if (!agenda.funcionario || !agenda.funcionario.id) {
+      throw new BadRequestException('Funcionário não especificado.');
+    }
+    if (!agenda.servico || !agenda.servico.id) {
+      throw new BadRequestException('Serviço não especificado.');
+    }
+
+    // Verificar se o cliente, funcionário e serviço existem
+    const cliente = await this.clienteRepository.get({ id: agenda.cliente.id });
+    const funcionario = await this.funcionarioRepository.get({
+      id: agenda.funcionario.id,
+    });
+    const servico = await this.servicoRepository.get({ id: agenda.servico.id });
+
+    if (!cliente) {
+      throw new BadRequestException(
+        `Cliente com ID ${agenda.cliente.id} não encontrado.`,
+      );
+    }
+    if (!funcionario) {
+      throw new BadRequestException(
+        `Funcionário com ID ${agenda.funcionario.id} não encontrado.`,
+      );
+    }
+    if (!servico) {
+      throw new BadRequestException(
+        `Serviço com ID ${agenda.servico.id} não encontrado.`,
+      );
+    }
+
+    // Verificar se a data e horário são válidos
+    const now = new Date();
+    const agendaDate = new Date(`${agenda.data}T${agenda.horario}`);
+    if (agendaDate < now) {
+      throw new BadRequestException(
+        'Data e horário não podem ser anteriores ao atual.',
+      );
+    }
+
+    // Verificar se a agenda já existe
+    const existingAgenda = await this.agendaRepository.find({
+      cliente: agenda.cliente,
+      funcionario: agenda.funcionario,
+      data: agenda.data,
+      horario: agenda.horario,
+    });
+
+    if (existingAgenda.length > 0) {
+      throw new ConflictException(
+        'Agenda já existe para o horário, cliente e funcionário especificados.',
+      );
+    }
+
+    const queryRunner = this.agendaRepository
+      .getConnection()
+      .createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
-      const createdAgenda = await this.agendaRepository.save(agenda);
+      const createdAgenda = await queryRunner.manager.save(Agenda, agenda);
 
       // Criar um atendimento associado à agenda
       if (
@@ -47,19 +117,23 @@ export class SaveAgenda {
         atendimento.data = agenda.data;
         atendimento.createdAt = new Date();
 
-        await this.atendimentoRepository.save(atendimento);
+        await queryRunner.manager.save(atendimento);
 
         this.logger.log(
           `Agenda created with ID: ${createdAgenda.id} and Atendimento created with ID: ${atendimento.id}`,
         );
       }
 
+      await queryRunner.commitTransaction();
       return createdAgenda;
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       if (error instanceof ConflictException) {
         throw new ConflictException('Erro ao criar a agenda.');
       }
       throw error;
+    } finally {
+      await queryRunner.release();
     }
   }
 
