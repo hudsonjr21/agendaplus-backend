@@ -55,4 +55,28 @@ export class CaixaController {
   async remove(@Param('id') id: number): Promise<void> {
     return this.saveCaixa.deleteCaixa(id);
   }
+
+  @Post('/transacao/entrada/:atendimentoId')
+  async addTransacaoEntrada(
+    @Param('atendimentoId') atendimentoId: number,
+    @Body('valor') valor: number,
+  ): Promise<void> {
+    try {
+      await this.saveCaixa.addTransacaoEntrada(atendimentoId, valor);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Post('/transacao/saida/:despesaId')
+  async addTransacaoSaida(
+    @Param('despesaId') despesaId: number,
+    @Body('valor') valor: number,
+  ): Promise<void> {
+    try {
+      await this.saveCaixa.addTransacaoSaida(despesaId, valor);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 }

@@ -1,58 +1,72 @@
-import {
-  Injectable,
-  Logger,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, ConflictException } from '@nestjs/common';
 import { CaixaImpl } from 'src/infra/database/postgres/caixa.impl';
-import { Caixa } from 'src/infra/database/entities/caixa.entity';
+import { TransacaoImpl } from 'src/infra/database/postgres/transacao.impl';
+import { AtendimentoImpl } from 'src/infra/database/postgres/atendimento.impl';
+import { DespesaImpl } from 'src/infra/database/postgres/despesa.impl';
 
 @Injectable()
 export class SaveCaixa {
   private readonly logger = new Logger(SaveCaixa.name);
 
-  constructor(private readonly caixaRepository: CaixaImpl) {}
+  constructor(
+    private readonly caixaRepository: CaixaImpl,
+    private readonly transacaoRepository: TransacaoImpl,
+    private readonly atendimentoRepository: AtendimentoImpl,
+    private readonly despesaRepository: DespesaImpl,
+  ) {}
 
-  async getAllCaixas(): Promise<Caixa[]> {
-    this.logger.log('Fetching all cash registers');
-    return this.caixaRepository.getAll();
+  async atualizarSaldoCaixa(): Promise<void> {
+    this.logger.log('Atualizando saldo do caixa');
+    const totalEntradas = await this.transacaoRepository.sumByTipo('entrada');
+    const totalSaidas = await this.transacaoRepository.sumByTipo('saida');
+    const saldo = totalEntradas - totalSaidas;
+
+    await this.caixaRepository.updateSaldo({
+      totalEntradas,
+      totalSaidas,
+      saldo,
+      ultimaAtualizacao: new Date(),
+    });
+
+    this.logger.log('Saldo do caixa atualizado com sucesso');
   }
 
-  async getCaixaById(id: number): Promise<Caixa | null> {
-    this.logger.log(`Fetching cash register with ID: ${id}`);
-    return this.caixaRepository.get({ id });
-  }
-
-  async createCaixa(caixa: Partial<Caixa>): Promise<Caixa> {
-    this.logger.log(`Creating cash register: ${JSON.stringify(caixa)}`);
-    const createdCaixa = await this.caixaRepository.save(caixa);
-    this.logger.log(`Cash register created with ID: ${createdCaixa.id}`);
-    return createdCaixa;
-  }
-
-  async updateCaixa(id: number, caixa: Partial<Caixa>): Promise<any> {
-    this.logger.log(`Updating cash register with ID: ${id}`);
-    const existingCaixa = await this.caixaRepository.get({ id });
-    if (!existingCaixa) {
-      throw new BadRequestException(`Caixa com ID ${id} não encontrada.`);
+  async addTransacaoEntrada(
+    atendimentoId: number,
+    valor: number,
+  ): Promise<void> {
+    const atendimento = await this.atendimentoRepository.getById(atendimentoId);
+    if (!atendimento) {
+      throw new ConflictException('Atendimento não encontrado');
     }
 
-    const isDataEqual =
-      JSON.stringify(existingCaixa) ===
-      JSON.stringify({ ...existingCaixa, ...caixa });
-    if (isDataEqual) {
-      throw new BadRequestException('Os dados já estão atualizados.');
-    }
+    const transacao = {
+      valor,
+      tipo: 'entrada',
+      descricao: `Pagamento do atendimento ${atendimentoId}`,
+      data: new Date(),
+      atendimento,
+    };
 
-    await this.caixaRepository.update(caixa as Caixa, { id });
-    this.logger.log(`Cash register updated with ID: ${id}`);
-    return { message: 'Caixa atualizado com sucesso.' };
+    await this.transacaoRepository.save(transacao);
+    await this.atualizarSaldoCaixa();
   }
 
-  async deleteCaixa(id: number): Promise<any> {
-    this.logger.log(`Deleting cash register with ID: ${id}`);
-    const deleteResult = await this.caixaRepository.delete(id.toString());
-    this.logger.log(`Cash register deleted with ID: ${id}`);
-    return deleteResult;
+  async addTransacaoSaida(despesaId: number, valor: number): Promise<void> {
+    const despesa = await this.despesaRepository.getById(despesaId);
+    if (!despesa) {
+      throw new ConflictException('Despesa não encontrada');
+    }
+
+    const transacao = {
+      valor,
+      tipo: 'saida',
+      descricao: `Despesa ${despesaId}`,
+      data: new Date(),
+      despesa,
+    };
+
+    await this.transacaoRepository.save(transacao);
+    await this.atualizarSaldoCaixa();
   }
 }
