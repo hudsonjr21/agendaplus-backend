@@ -11,7 +11,7 @@ import {
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
-import { SaveAgenda } from '../../domain/modules/usecases/process/agenda/save.agenda';
+import { SaveAgenda } from '../../domain/modules/usecases/process/agenda/save-agenda';
 import { AgendaDto } from '../dto/agenda.dto';
 import { Agenda } from 'src/domain/modules/entities/agenda.class';
 

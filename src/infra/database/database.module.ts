@@ -14,6 +14,10 @@ import { ServicoImpl } from './postgres/servico.impl';
 import { ServicoRepository } from 'src/domain/repositories/database/servico.repository';
 import { DespesaRepository } from 'src/domain/repositories/database/despesa.repository';
 import { DespesaImpl } from './postgres/despesa.impl';
+import { CaixaRepository } from 'src/domain/repositories/database/caixa.repository';
+import { CaixaImpl } from './postgres/caixa.impl';
+import { TransacaoRepository } from 'src/domain/repositories/database/transacao.repository';
+import { TransacaoImpl } from './postgres/transacao.impl';
 
 @Global()
 @Module({
@@ -42,6 +46,14 @@ import { DespesaImpl } from './postgres/despesa.impl';
     {
       provide: DespesaRepository,
       useClass: DespesaImpl,
+    },
+    {
+      provide: CaixaRepository,
+      useClass: CaixaImpl,
+    },
+    {
+      provide: TransacaoRepository,
+      useClass: TransacaoImpl,
     },
   ],
   exports: REPOSITORIES,

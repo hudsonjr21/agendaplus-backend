@@ -4,7 +4,7 @@ import { Agenda } from 'src/infra/database/entities/agenda.entity';
 import { Atendimento } from 'src/infra/database/entities/atendimento.entity';
 import { AgendaImpl } from 'src/infra/database/postgres/agenda.impl';
 import { AtendimentoImpl } from 'src/infra/database/postgres/atendimento.impl';
-import { SaveAgenda } from './save.agenda';
+import { SaveAgenda } from './save-agenda';
 import { AgendaController } from 'src/presentation/controllers/agenda.controller';
 
 @Module({
