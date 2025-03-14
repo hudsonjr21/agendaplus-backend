@@ -11,6 +11,7 @@ import {
 import { Cliente } from './cliente.entity';
 import { Funcionario } from './funcionario.entity';
 import { Servico } from './servico.entity';
+import { Agenda } from './agenda.entity';
 
 @Entity('atendimento')
 export class Atendimento {
@@ -28,6 +29,10 @@ export class Atendimento {
   @ManyToOne(() => Servico)
   @JoinColumn({ name: 'servico_id' })
   servico: Servico;
+
+  @ManyToOne(() => Agenda) // Adicionar relação com Agenda
+  @JoinColumn({ name: 'agenda_id' })
+  agenda: Agenda;
 
   @Column({ name: 'data', type: 'date' })
   data: Date;

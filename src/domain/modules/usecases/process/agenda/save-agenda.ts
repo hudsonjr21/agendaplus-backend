@@ -142,6 +142,7 @@ export class SaveAgenda {
         atendimento.servico = agenda.servico;
         atendimento.data = agenda.data;
         atendimento.createdAt = new Date();
+        atendimento.agenda = createdAgenda; // Associar atendimento à agenda
 
         await queryRunner.manager.save(atendimento);
 
@@ -180,9 +181,49 @@ export class SaveAgenda {
       throw new BadRequestException('Os dados já estão atualizados.');
     }
 
-    await this.agendaRepository.update(agenda as Agenda, { id });
-    this.logger.log(`Agenda updated with ID: ${id}`);
-    return { message: 'Agenda atualizada com sucesso.' };
+    const queryRunner = this.agendaRepository
+      .getConnection()
+      .createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.update(Agenda, id, agenda);
+
+      // Atualizar atendimento associado à agenda
+      const atendimento = await this.atendimentoRepository.get({
+        agenda: existingAgenda,
+      } as Partial<Atendimento>);
+
+      if (atendimento) {
+        if (agenda.cliente) {
+          atendimento.cliente = agenda.cliente;
+        }
+        if (agenda.funcionario) {
+          atendimento.funcionario = agenda.funcionario;
+        }
+        if (agenda.servico) {
+          atendimento.servico = agenda.servico;
+        }
+        if (agenda.data) {
+          atendimento.data = agenda.data;
+        }
+
+        await queryRunner.manager.save(atendimento);
+
+        this.logger.log(
+          `Agenda updated with ID: ${id} and Atendimento updated with ID: ${atendimento.id}`,
+        );
+      }
+
+      await queryRunner.commitTransaction();
+      return { message: 'Agenda atualizada com sucesso.' };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async deleteAgenda(id: number): Promise<any> {
@@ -192,22 +233,32 @@ export class SaveAgenda {
       throw new BadRequestException(`Agenda com ID ${id} não encontrada.`);
     }
 
-    const deleteResult = await this.agendaRepository.delete(id.toString());
-    this.logger.log(`Agenda deleted with ID: ${id}`);
+    const queryRunner = this.agendaRepository
+      .getConnection()
+      .createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    // Excluir o atendimento associado à agenda
-    const atendimento = await this.atendimentoRepository.get({
-      cliente: agenda.cliente,
-      funcionario: agenda.funcionario,
-      servico: agenda.servico,
-      data: agenda.data,
-    } as Partial<Atendimento>);
-    if (atendimento) {
-      await this.atendimentoRepository.delete(atendimento.id.toString());
-      this.logger.log(`Atendimento deleted with ID: ${atendimento.id}`);
+    try {
+      const deleteResult = await this.agendaRepository.delete(id.toString());
+
+      // Excluir o atendimento associado à agenda
+      const atendimento = await this.atendimentoRepository.get({
+        agenda: agenda,
+      } as Partial<Atendimento>);
+      if (atendimento) {
+        await this.atendimentoRepository.delete(atendimento.id.toString());
+        this.logger.log(`Atendimento deleted with ID: ${atendimento.id}`);
+      }
+
+      await queryRunner.commitTransaction();
+      return deleteResult;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-
-    return deleteResult;
   }
 
   async searchAgendas(query: any): Promise<Agenda[]> {
