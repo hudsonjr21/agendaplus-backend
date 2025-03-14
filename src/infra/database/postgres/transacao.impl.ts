@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ReadStream } from 'typeorm/platform/PlatformTools';
 import { QueryFailedError } from 'typeorm';
 import { ConflictException } from '@nestjs/common';
-import { Caixa } from 'src/domain/modules/entities/caixa.class';
 
 @Injectable()
 export class TransacaoImpl implements TransacaoRepository {
@@ -28,34 +27,22 @@ export class TransacaoImpl implements TransacaoRepository {
   }
 
   async get(filters: Partial<Transacao>): Promise<Transacao | null> {
-    const transacao = await this.transacaoRepository.findOne({
+    return await this.transacaoRepository.findOne({
       where: filters,
       relations: ['caixa', 'atendimento', 'despesa'],
     } as FindOneOptions<Transacao>);
-    if (transacao) {
-      transacao.caixaId = transacao.caixa ? transacao.caixa.id : null;
-    }
-    return transacao;
   }
 
   async getAll(): Promise<Transacao[]> {
-    const transacoes = await this.transacaoRepository.find({
+    return await this.transacaoRepository.find({
       relations: ['caixa', 'atendimento', 'despesa'],
     });
-    transacoes.forEach((transacao) => {
-      transacao.caixaId = transacao.caixa ? transacao.caixa.id : null;
-    });
-    return transacoes;
   }
 
   async save(transacao: Partial<Transacao>): Promise<Transacao> {
     try {
       const newTransacao = this.transacaoRepository.create(transacao);
-      const savedTransacao = await this.transacaoRepository.save(newTransacao);
-      savedTransacao.caixaId = savedTransacao.caixa
-        ? savedTransacao.caixa.id
-        : null;
-      return savedTransacao;
+      return await this.transacaoRepository.save(newTransacao);
     } catch (error) {
       if (
         error instanceof QueryFailedError &&
