@@ -273,4 +273,9 @@ export class SaveAgenda {
 
     return await this.agendaRepository.find(filters);
   }
+
+  async searchAgendasByDate(date: Date): Promise<Agenda[]> {
+    this.logger.log(`Searching agendas by date: ${date}`);
+    return this.agendaRepository.searchByDate(date);
+  }
 }
