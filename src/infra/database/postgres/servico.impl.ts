@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError } from 'typeorm';
 import { ConflictException } from '@nestjs/common';
 import { ServicoRepository } from 'src/domain/repositories/database/servico.repository';
+import { ReadStream, createReadStream } from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class ServicoImpl implements ServicoRepository {
@@ -57,5 +59,14 @@ export class ServicoImpl implements ServicoRepository {
 
   async find(filters: any): Promise<Servico[]> {
     return await this.servicoRepository.find({ where: filters });
+  }
+
+  async getStream(filters: Partial<Servico>): Promise<ReadStream> {
+    const servico = await this.get(filters);
+    if (!servico) {
+      throw new Error('Serviço não encontrado');
+    }
+    const filePath = join(__dirname, 'path-to-your-file', `${servico.id}.txt`);
+    return createReadStream(filePath);
   }
 }
