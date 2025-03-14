@@ -5,7 +5,7 @@ import { AgendaModule } from './modules/usecases/process/agenda/agenda.module';
 import { AtendimentoModule } from './modules/usecases/process/atendimento/atendimento.module';
 import { ServicoModule } from './modules/usecases/process/servico/servico.module';
 import { DespesaModule } from './modules/usecases/process/despesa/despesa.module';
-import { CaixaModule } from './modules/usecases/caixa/caixa.module';
+import { CaixaModule } from './modules/usecases/process/caixa/caixa.module';
 import { TransacaoModule } from './modules/usecases/process/transacao/transacao.module';
 
 @Module({
