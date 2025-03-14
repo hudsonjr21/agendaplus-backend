@@ -34,9 +34,10 @@ export class SaveAgenda {
     return this.agendaRepository.get({ id });
   }
 
-  async createAgenda(agenda: Partial<Agenda>): Promise<Agenda> {
-    this.logger.log(`Creating agenda: ${JSON.stringify(agenda)}`);
-
+  private async validateAgenda(
+    agenda: Partial<Agenda>,
+    id?: number,
+  ): Promise<void> {
     // Verificar se as propriedades existem
     if (!agenda.cliente || !agenda.cliente.id) {
       throw new BadRequestException('Cliente não especificado.');
@@ -87,7 +88,10 @@ export class SaveAgenda {
       horario: agenda.horario,
     });
 
-    if (existingFuncionarioAgenda.length > 0) {
+    if (
+      existingFuncionarioAgenda.length > 0 &&
+      existingFuncionarioAgenda[0].id !== id
+    ) {
       throw new ConflictException(
         `Funcionário com ID ${agenda.funcionario.id} já tem uma agenda no horário ${agenda.horario} na data ${agenda.data}.`,
       );
@@ -100,11 +104,21 @@ export class SaveAgenda {
       horario: agenda.horario,
     });
 
-    if (existingClienteAgenda.length > 0) {
+    if (
+      existingClienteAgenda.length > 0 &&
+      existingClienteAgenda[0].id !== id
+    ) {
       throw new ConflictException(
         `Cliente com ID ${agenda.cliente.id} já tem uma agenda no horário ${agenda.horario} na data ${agenda.data} com outro funcionário.`,
       );
     }
+  }
+
+  async createAgenda(agenda: Partial<Agenda>): Promise<Agenda> {
+    this.logger.log(`Creating agenda: ${JSON.stringify(agenda)}`);
+
+    // Validar agenda
+    await this.validateAgenda(agenda);
 
     const queryRunner = this.agendaRepository
       .getConnection()
@@ -155,6 +169,9 @@ export class SaveAgenda {
     if (!existingAgenda) {
       throw new BadRequestException(`Agenda com ID ${id} não encontrada.`);
     }
+
+    // Validar agenda
+    await this.validateAgenda(agenda, id);
 
     const isDataEqual =
       JSON.stringify(existingAgenda) ===
