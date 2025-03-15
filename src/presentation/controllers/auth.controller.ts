@@ -4,7 +4,7 @@ import { TokenDto } from '../dto/output-auth.dto';
 import { LoginUserService } from 'src/domain/modules/usecases/process/acess-control/auth/login-user-usecase';
 
 @Controller('auth/')
-export class ApiController {
+export class AuthController {
   constructor(private loginUserService: LoginUserService) {}
 
   @Post('login')

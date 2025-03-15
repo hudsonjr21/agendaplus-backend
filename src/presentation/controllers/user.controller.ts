@@ -14,7 +14,7 @@ import { GetOneUserService } from 'src/domain/modules/usecases/process/acess-con
 
 @UseGuards(JwtAuthGuard)
 @Controller('user')
-export class ApiController {
+export class UserController {
   constructor(
     private readonly updateUserPermissionService: UpdateUserPermissionService,
     private readonly getAllUsersService: GetAllUsersService,

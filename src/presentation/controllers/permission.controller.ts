@@ -8,7 +8,7 @@ import { GetAllPermissionService } from 'src/domain/modules/usecases/process/ace
 import { PermissionDto2 } from '../dto/output-permission';
 
 @Controller()
-export class ApiController {
+export class PermissionController {
   constructor(
     private readonly getAllPermissionService: GetAllPermissionService,
   ) {}

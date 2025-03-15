@@ -30,7 +30,7 @@ import { GetOneGroupService } from 'src/domain/modules/usecases/process/acess-co
 
 @UseGuards(JwtAuthGuard)
 @Controller('group')
-export class ApiController {
+export class GroupController {
   constructor(
     private readonly updateGroupPermissionService: UpdateGroupPermissionService,
     private readonly createGroupService: CreateGroupService,

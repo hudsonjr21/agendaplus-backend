@@ -7,6 +7,7 @@ import { ServicoModule } from './modules/usecases/process/servico/servico.module
 import { DespesaModule } from './modules/usecases/process/despesa/despesa.module';
 import { CaixaModule } from './modules/usecases/process/caixa/caixa.module';
 import { TransacaoModule } from './modules/usecases/process/transacao/transacao.module';
+import { AcessControlModule } from './modules/usecases/process/acess-control/acess-control.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TransacaoModule } from './modules/usecases/process/transacao/transacao.
     DespesaModule,
     CaixaModule,
     TransacaoModule,
+    AcessControlModule,
   ],
   exports: [
     ClienteModule,
@@ -28,6 +30,7 @@ import { TransacaoModule } from './modules/usecases/process/transacao/transacao.
     DespesaModule,
     CaixaModule,
     TransacaoModule,
+    AcessControlModule,
   ],
 })
 export class DomainModule {}
