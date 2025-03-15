@@ -12,7 +12,6 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   OutputGroupDto,
   OutputGroupNoRelationsDto,
@@ -20,7 +19,6 @@ import {
 import {
   InputCreateGroupDto,
   InputUpdateGroupDto,
-  InputUpdateGroupPermissionDto,
 } from '../dto/input-group.dto';
 import { UpdateGroupPermissionService } from 'src/domain/modules/usecases/process/acess-control/group/update-group-permission-usecase';
 import { CreateGroupService } from 'src/domain/modules/usecases/process/acess-control/group/create-group-usecase';
@@ -30,11 +28,6 @@ import { GetAllGroupsService } from 'src/domain/modules/usecases/process/acess-c
 import { DeleteGroupService } from 'src/domain/modules/usecases/process/acess-control/group/delete-group-usecase';
 import { GetOneGroupService } from 'src/domain/modules/usecases/process/acess-control/group/get-one-group-usecase';
 
-@ApiTags('Group')
-@ApiBearerAuth()
-@ApiResponse({ status: 400 })
-@ApiResponse({ status: 401 })
-@ApiResponse({ status: 500 })
 @UseGuards(JwtAuthGuard)
 @Controller('group')
 export class ApiController {
@@ -47,7 +40,6 @@ export class ApiController {
     private readonly getOneGroupService: GetOneGroupService,
   ) {}
 
-  @ApiResponse({ status: 200, type: [OutputGroupDto] })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/')
   async getAllGroups(
@@ -58,15 +50,12 @@ export class ApiController {
     );
   }
 
-  @ApiResponse({ status: 200, type: OutputGroupDto })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/:id')
   async getGroup(@Param('id') id: number): Promise<OutputGroupDto> {
     return await this.getOneGroupService.execute(id);
   }
 
-  @ApiResponse({ status: 201, type: OutputGroupNoRelationsDto })
-  @ApiBody({ type: InputCreateGroupDto })
   @Post('create')
   async createGroup(
     @Body()
@@ -80,8 +69,6 @@ export class ApiController {
     return await this.deleteGroupService.execute(id);
   }
 
-  @ApiResponse({ status: 200, type: InputUpdateGroupDto })
-  @ApiBody({ type: OutputGroupDto })
   @Put('update/:id')
   async updateGroup(
     @Param('id') id: number,
@@ -90,12 +77,14 @@ export class ApiController {
     return await this.updateGroupService.execute(id, data);
   }
 
-  @ApiBody({ type: InputUpdateGroupPermissionDto })
   @Patch('update-permissions/:id')
   async updateGroupPermission(
     @Param('id') id: number,
-    @Body() data: { permissions: string[] },
+    @Body() data: { permissions: string[] }, // Aqui ainda recebe como string[]
   ): Promise<any> {
-    return await this.updateGroupPermissionService.execute(id, data);
+    const permissionsAsNumbers = data.permissions.map((p) => Number(p)); // Converte para número
+    return await this.updateGroupPermissionService.execute(id, {
+      permissions: permissionsAsNumbers,
+    });
   }
 }

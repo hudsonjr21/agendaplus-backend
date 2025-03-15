@@ -2,56 +2,48 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Generated,
   CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
   ManyToMany,
   JoinTable,
   Index,
 } from 'typeorm';
 import { Permission } from './permission.entity';
-import { Transform } from 'class-transformer';
 import { Group } from './group.entity';
-import { OneToMany } from 'typeorm';
 
-@Entity()
+@Entity('user')
+@Index(['cpf'], { unique: true })
 export class User {
-  @Index()
-  @PrimaryGeneratedColumn('increment')
+  @PrimaryGeneratedColumn({ name: 'id', type: 'bigint' })
   id?: number;
 
-  @Column()
+  @Column({ name: 'name', type: 'varchar', length: 255 })
   name: string;
 
-  @Column()
+  @Column({ name: 'cpf', type: 'varchar', length: 14, unique: true })
   cpf: string;
 
-  @Column()
+  @Column({ name: 'email', type: 'varchar', length: 255 })
   email: string;
 
-  @Column()
+  @Column({ name: 'phone', type: 'varchar', length: 20 })
   phone: string;
 
-  @Column()
+  @Column({ name: 'identification', type: 'varchar', length: 255 })
   identification: string;
 
-  @Column()
+  @Column({ name: 'status', type: 'boolean' })
   status: boolean;
 
-  @Transform(({ value }) => {
-    return new Date(value).toLocaleString('pt-BR');
-  })
-  @CreateDateColumn({
-    type: 'timestamptz',
-  })
-  created_at?: Date;
+  @CreateDateColumn({ type: 'timestamptz', name: 'created_at', select: false })
+  createdAt?: Date;
 
-  @Transform(({ value }) => {
-    return new Date(value).toLocaleString('pt-BR');
-  })
-  @CreateDateColumn({
-    type: 'timestamptz',
-  })
-  updated_at?: Date;
+  @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at', select: false })
+  updatedAt?: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz', name: 'deleted_at', select: false })
+  deletedAt?: Date;
 
   @ManyToMany(() => Permission, {
     cascade: true,

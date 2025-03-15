@@ -10,10 +10,16 @@ export class GroupImpl implements GroupRepository {
   ) {}
 
   async getOne(id: number): Promise<Group> {
-    return await this.groupRepository.findOne({
+    const group = await this.groupRepository.findOne({
       where: { id },
       relations: ['permission_group'],
     });
+
+    if (!group) {
+      throw new Error(`Grupo com ID ${id} não encontrado`);
+    }
+
+    return group;
   }
 
   async getAll(

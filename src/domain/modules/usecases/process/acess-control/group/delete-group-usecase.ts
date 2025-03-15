@@ -15,12 +15,21 @@ export class DeleteGroupUseCase {
       throw new HttpException('Group not found', HttpStatus.NOT_FOUND);
     }
 
-    if (group.user_group?.length > 0) {
-      throw new Error(
-        `O grupo não pode ser deletado devido a existencia de grupos e usuários. Remova as permissões de grupo dos usuários antes de tentar excluir o grupo.`,
+    if (group.user_group && group.user_group.length > 0) {
+      throw new HttpException(
+        `O grupo não pode ser deletado devido à existência de grupos e usuários. Remova as permissões de grupo dos usuários antes de tentar excluir o grupo.`,
+        HttpStatus.BAD_REQUEST,
       );
     }
-    await this.groupRepository.delete(id);
+
+    try {
+      await this.groupRepository.delete(id);
+    } catch (error) {
+      throw new HttpException(
+        `Erro ao deletar grupo no banco de dados: ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
 
@@ -28,11 +37,13 @@ export class DeleteGroupService {
   constructor(private readonly deleteGroupUseCase: DeleteGroupUseCase) {}
 
   async execute(id: number) {
-    this.deleteGroupUseCase.execute(id).catch((err) => {
+    try {
+      await this.deleteGroupUseCase.execute(id);
+    } catch (err) {
       throw new HttpException(
-        'Erro ao deletar grupo. ' + err.message,
+        `Erro ao deletar grupo. ${err}`,
         HttpStatus.BAD_REQUEST,
       );
-    });
+    }
   }
 }

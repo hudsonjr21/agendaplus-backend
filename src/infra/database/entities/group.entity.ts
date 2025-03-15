@@ -1,5 +1,7 @@
 import {
   CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
   PrimaryGeneratedColumn,
   Column,
   Entity,
@@ -9,41 +11,33 @@ import {
 } from 'typeorm';
 import { Permission } from './permission.entity';
 import { User } from './user.entity';
-import { Transform } from 'class-transformer';
 
-@Entity()
+@Entity('group')
 export class Group {
   @Index()
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id', type: 'bigint' })
   id?: number;
 
-  @Column()
+  @Column({ name: 'title', type: 'varchar', length: 255 })
   title?: string;
 
-  @Column()
+  @Column({ name: 'access_level', type: 'varchar', length: 255 })
   access_level?: string;
 
-  @Column()
+  @Column({ name: 'description', type: 'varchar', length: 255 })
   description?: string;
 
-  @Column()
+  @Column({ name: 'status', type: 'boolean' })
   status?: boolean;
 
-  @CreateDateColumn({
-    type: 'timestamptz',
-  })
-  @Transform(({ value }) => {
-    return new Date(value).toLocaleString('pt-BR');
-  })
+  @CreateDateColumn({ type: 'timestamptz', name: 'created_at', select: false })
   created_at?: Date;
 
-  @CreateDateColumn({
-    type: 'timestamptz',
-  })
-  @Transform(({ value }) => {
-    return new Date(value).toLocaleString('pt-BR');
-  })
+  @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at', select: false })
   updated_at?: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz', name: 'deleted_at', select: false })
+  deleted_at?: Date;
 
   @ManyToMany(() => Permission, {
     cascade: true,
