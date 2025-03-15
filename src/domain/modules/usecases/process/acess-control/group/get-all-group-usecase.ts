@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Group } from 'src/domain/modules/entities/group.class';
 import { GroupRepository } from 'src/domain/repositories/database/group-repository';
 
@@ -14,15 +14,15 @@ export class GetAllGroupUseCase {
   }
 }
 
-// export class GetAllGroupsService {
-//   constructor(private getAllGroupUseCase: GetAllGroupUseCase) {}
+export class GetAllGroupsService {
+  constructor(private getAllGroupUseCase: GetAllGroupUseCase) {}
 
-//   async execute(query: { description: string }): Promise<Group[]> {
-//     return await this.getAllGroupUseCase.execute(query).catch((err) => {
-//       throw new HttpException(
-//         'Erro ao buscar grupos. ' + err.message,
-//         HttpStatus.BAD_REQUEST,
-//       );
-//     });
-//   }
-// }
+  async execute(query: { description: string }): Promise<Group[]> {
+    return await this.getAllGroupUseCase.execute(query).catch((err) => {
+      throw new HttpException(
+        'Erro ao buscar grupos. ' + err.message,
+        HttpStatus.BAD_REQUEST,
+      );
+    });
+  }
+}

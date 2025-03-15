@@ -1,6 +1,6 @@
 import { GroupRepository } from 'src/domain/repositories/database/group-repository';
 import { GetOneGroupUseCase } from './get-one-group-usecase';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Group } from 'src/domain/modules/entities/group.class';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class UpdateGroupUseCase {
 
   async execute(group: Group): Promise<Group> {
     return await this.getOneGroupUseCase
-      .execute(group.id)
+      .execute(group.id!)
       .then((data) => {
         const upData = this.groupRepository.update({
           ...data,
@@ -29,27 +29,27 @@ export class UpdateGroupUseCase {
   }
 }
 
-// export class UpdateGroupService {
-//   constructor(private readonly updateGroupUseCase: UpdateGroupUseCase) {}
+export class UpdateGroupService {
+  constructor(private readonly updateGroupUseCase: UpdateGroupUseCase) {}
 
-//   async execute(
-//     id: number,
-//     dataGroup: {
-//       description: string;
-//       status: boolean;
-//     },
-//   ) {
-//     return await this.updateGroupUseCase
-//       .execute({
-//         id,
-//         description: dataGroup.description,
-//         status: dataGroup.status,
-//       })
-//       .catch((err) => {
-//         throw new HttpException(
-//           'Erro ao atualizar grupo. ' + err.message,
-//           HttpStatus.BAD_REQUEST,
-//         );
-//       });
-//   }
-// }
+  async execute(
+    id: number,
+    dataGroup: {
+      description: string;
+      status: boolean;
+    },
+  ) {
+    return await this.updateGroupUseCase
+      .execute({
+        id,
+        description: dataGroup.description,
+        status: dataGroup.status,
+      })
+      .catch((err) => {
+        throw new HttpException(
+          'Erro ao atualizar grupo. ' + err.message,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
+  }
+}

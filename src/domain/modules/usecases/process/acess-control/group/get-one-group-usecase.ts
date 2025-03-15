@@ -1,6 +1,6 @@
 import { GroupRepository } from 'src/domain/repositories/database/group-repository';
 import { Group } from 'src/domain/modules/entities/group.class';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GetOneGroupUseCase {
@@ -11,15 +11,15 @@ export class GetOneGroupUseCase {
   }
 }
 
-// export class GetOneGroupService {
-//   constructor(private readonly getOneGroupUseCase: GetOneGroupUseCase) {}
+export class GetOneGroupService {
+  constructor(private readonly getOneGroupUseCase: GetOneGroupUseCase) {}
 
-//   async execute(id: number) {
-//     return await this.getOneGroupUseCase.execute(id).catch((err) => {
-//       throw new HttpException(
-//         'Erro buscar grupo especificado. ' + err.message,
-//         HttpStatus.BAD_REQUEST,
-//       );
-//     });
-//   }
-// }
+  async execute(id: number) {
+    return await this.getOneGroupUseCase.execute(id).catch((err) => {
+      throw new HttpException(
+        'Erro buscar grupo especificado. ' + err.message,
+        HttpStatus.BAD_REQUEST,
+      );
+    });
+  }
+}

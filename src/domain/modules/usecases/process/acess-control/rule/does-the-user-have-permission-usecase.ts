@@ -7,14 +7,21 @@ export class DoesTheUserHavePermissionUseCase {
 
   async execute(id: number, requiredPermissions: number[]): Promise<boolean> {
     const user = await this.getOneUserUseCase.execute(id, true);
-    const allPermissions = user.user_group.map((group) => {
-      return group.permission_group;
-    });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const allPermissions =
+      user.user_group?.map((group) => {
+        return group.permission_group;
+      }) || [];
 
     let userPermissions: [][] | any = allPermissions.map((permission) => {
-      return permission.map((data) => {
-        return data.id;
-      });
+      return (
+        permission?.map((data) => {
+          return data.id;
+        }) || []
+      );
     });
 
     if (userPermissions.length > 0) {

@@ -4,19 +4,15 @@ import {
   Get,
   UseInterceptors,
 } from '@nestjs/common';
-import { GetAllPermissionService } from '../services/get-all-permission.service';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  ErrorHandleDto,
-  InternalServerErrorDto,
-} from 'src/@nest-modules/global/dto/output-global.dto';
+import { GetAllPermissionService } from 'src/domain/modules/usecases/process/acess-control/permission/get-all-permission-usecase';
 import { PermissionDto2 } from '../dto/output-permission';
 
 @ApiTags('Permissions')
 @ApiBearerAuth()
-@ApiResponse({ status: 400, type: ErrorHandleDto })
-@ApiResponse({ status: 401, type: ErrorHandleDto })
-@ApiResponse({ status: 500, type: InternalServerErrorDto })
+@ApiResponse({ status: 400 })
+@ApiResponse({ status: 401 })
+@ApiResponse({ status: 500 })
 @Controller()
 export class ApiController {
   constructor(

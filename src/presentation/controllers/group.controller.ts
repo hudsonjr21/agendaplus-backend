@@ -1,6 +1,3 @@
-import { UpdateGroupPermissionService } from '../services/update-group-permission.service';
-import { CreateGroupService } from '../services/create-group.service';
-import { UpdateGroupService } from '../services/update-group.service';
 import {
   Post,
   Get,
@@ -13,32 +10,31 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   UseGuards,
+  Query,
 } from '@nestjs/common';
-import { GetAllGroupsService } from '../services/get-all-groups.service';
 import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { DeleteGroupService } from '../services/delete-group.service';
-import { Query } from '@nestjs/common';
-import { GetOneGroupService } from '../services/get-one-group.service';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import {
   OutputGroupDto,
   OutputGroupNoRelationsDto,
 } from '../dto/output-group.dto';
 import {
-  ErrorHandleDto,
-  InternalServerErrorDto,
-} from '../../../global/dto/output-global.dto';
-import {
   InputCreateGroupDto,
   InputUpdateGroupDto,
   InputUpdateGroupPermissionDto,
 } from '../dto/input-group.dto';
+import { UpdateGroupPermissionService } from 'src/domain/modules/usecases/process/acess-control/group/update-group-permission-usecase';
+import { CreateGroupService } from 'src/domain/modules/usecases/process/acess-control/group/create-group-usecase';
+import { UpdateGroupService } from 'src/domain/modules/usecases/process/acess-control/group/update-group-usecase';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { GetAllGroupsService } from 'src/domain/modules/usecases/process/acess-control/group/get-all-group-usecase';
+import { DeleteGroupService } from 'src/domain/modules/usecases/process/acess-control/group/delete-group-usecase';
+import { GetOneGroupService } from 'src/domain/modules/usecases/process/acess-control/group/get-one-group-usecase';
 
 @ApiTags('Group')
 @ApiBearerAuth()
-@ApiResponse({ status: 400, type: ErrorHandleDto })
-@ApiResponse({ status: 401, type: ErrorHandleDto })
-@ApiResponse({ status: 500, type: InternalServerErrorDto })
+@ApiResponse({ status: 400 })
+@ApiResponse({ status: 401 })
+@ApiResponse({ status: 500 })
 @UseGuards(JwtAuthGuard)
 @Controller('group')
 export class ApiController {

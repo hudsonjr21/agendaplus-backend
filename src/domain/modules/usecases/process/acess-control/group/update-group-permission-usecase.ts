@@ -1,8 +1,8 @@
+import { Group } from 'src/domain/modules/entities/group.class';
 import { GetOneGroupUseCase } from './get-one-group-usecase';
 import { CreateGroupUseCase } from './create-group-usecase';
 import { GetAllPermissionUseCase } from '../permission/get-all-permission-usecase';
-import { Injectable } from '@nestjs/common';
-import { Group } from 'src/domain/modules/entities/group.class';
+import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
 
 @Injectable()
 export class UpdateGroupPermissionUseCase {
@@ -14,7 +14,7 @@ export class UpdateGroupPermissionUseCase {
 
   async execute(
     id: number,
-    dataGroup: { permissions: string[] },
+    dataGroup: { permissions: number[] },
   ): Promise<Group> {
     const permissions = await this.getAllPermissionUseCase.execute(
       dataGroup.permissions,
@@ -29,19 +29,19 @@ export class UpdateGroupPermissionUseCase {
   }
 }
 
-// export class UpdateGroupPermissionService {
-//   constructor(
-//     private readonly updateGroupPermissionUseCase: UpdateGroupPermissionUseCase,
-//   ) {}
+export class UpdateGroupPermissionService {
+  constructor(
+    private readonly updateGroupPermissionUseCase: UpdateGroupPermissionUseCase,
+  ) {}
 
-//   async execute(id: number, dataGroup: { permissions: string[] }) {
-//     return this.updateGroupPermissionUseCase
-//       .execute(id, dataGroup)
-//       .catch((err) => {
-//         throw new HttpException(
-//           'Erro ao atualizar permissões do grupo. ' + err.message,
-//           HttpStatus.BAD_REQUEST,
-//         );
-//       });
-//   }
-// }
+  async execute(id: number, dataGroup: { permissions: number[] }) {
+    return this.updateGroupPermissionUseCase
+      .execute(id, dataGroup)
+      .catch((err) => {
+        throw new HttpException(
+          'Erro ao atualizar permissões do grupo. ' + err.message,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
+  }
+}

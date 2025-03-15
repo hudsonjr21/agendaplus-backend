@@ -1,7 +1,7 @@
 import { UserRepository } from 'src/domain/repositories/database/user-repository';
 import { GetAllGroupUseCase } from '../group/get-all-group-usecase';
 import { GetOneUserUseCase } from './get-one-user-usecase';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 Injectable();
 export class UpdateUserPermissionUseCase {
@@ -25,18 +25,18 @@ export class UpdateUserPermissionUseCase {
   }
 }
 
-// export class UpdateUserPermissionService {
-//   constructor(
-//     private readonly updateUserPermissionUseCase: UpdateUserPermissionUseCase,
-//   ) {}
-//   async execute(id: number, dataPermission: { permissions: string[] }) {
-//     return this.updateUserPermissionUseCase
-//       .execute(id, dataPermission)
-//       .catch((err) => {
-//         throw new HttpException(
-//           'Erro ao atualizar permissões do usuário. ' + err.message,
-//           HttpStatus.BAD_REQUEST,
-//         );
-//       });
-//   }
-// }
+export class UpdateUserPermissionService {
+  constructor(
+    private readonly updateUserPermissionUseCase: UpdateUserPermissionUseCase,
+  ) {}
+  async execute(id: number, dataPermission: { permissions: string[] }) {
+    return this.updateUserPermissionUseCase
+      .execute(id, dataPermission)
+      .catch((err) => {
+        throw new HttpException(
+          'Erro ao atualizar permissões do usuário. ' + err.message,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
+  }
+}

@@ -6,27 +6,22 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { GetAllUsersService } from '../services/get-all-users.service';
-import { UpdateUserPermissionService } from '../services/update-user-permission.service';
 import { Query, Param, Body, Patch } from '@nestjs/common';
-import { GetOneUserService } from '../services/get-one-user.service';
-import { ModifyStatusUserService } from '../services/modify-status-user.service';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import {
-  ErrorHandleDto,
-  InternalServerErrorDto,
-} from '../../../global/dto/output-global.dto';
 import { GetUserDto } from '../dto/output-user.dto';
 import {
   UpdateStatusDto,
   UpdateUserPermissionsDto,
 } from '../dto/input-user.dto';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { UpdateUserPermissionService } from 'src/domain/modules/usecases/process/acess-control/user/update-user-permission-usecase';
+import { GetAllUsersService } from 'src/domain/modules/usecases/process/acess-control/user/get-all-user-usecase';
+import { GetOneUserService } from 'src/domain/modules/usecases/process/acess-control/user/get-one-user-usecase';
 
 @ApiTags('User')
 @ApiBearerAuth()
-@ApiResponse({ status: 400, type: ErrorHandleDto })
-@ApiResponse({ status: 401, type: ErrorHandleDto })
-@ApiResponse({ status: 500, type: InternalServerErrorDto })
+@ApiResponse({ status: 400 })
+@ApiResponse({ status: 401 })
+@ApiResponse({ status: 500 })
 @UseGuards(JwtAuthGuard)
 @Controller('user')
 export class ApiController {
@@ -34,7 +29,6 @@ export class ApiController {
     private readonly updateUserPermissionService: UpdateUserPermissionService,
     private readonly getAllUsersService: GetAllUsersService,
     private readonly getOneUsersService: GetOneUserService,
-    private readonly modifyStatusUserService: ModifyStatusUserService,
   ) {}
 
   @ApiResponse({ status: 200, type: [GetUserDto] })
@@ -59,14 +53,5 @@ export class ApiController {
   @Get('/:id')
   async getUser(@Param('id') id: number): Promise<GetUserDto> {
     return await this.getOneUsersService.execute(id);
-  }
-
-  @ApiBody({ type: UpdateStatusDto })
-  @Patch('status/:id')
-  async updateStatusUser(
-    @Param('id') id: number,
-    @Body() data: { status: boolean },
-  ): Promise<any> {
-    return await this.modifyStatusUserService.execute(id, data.status);
   }
 }

@@ -2,7 +2,7 @@ import { Permission } from './permission.class';
 import { Group } from './group.class';
 
 export class User {
-  id?: number;
+  id: number;
   name: string;
   cpf: string;
   email: string;

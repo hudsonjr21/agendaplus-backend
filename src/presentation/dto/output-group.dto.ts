@@ -4,8 +4,6 @@ export class PermissionGroupDto {
   @ApiProperty()
   id?: number;
   @ApiProperty()
-  id?: string;
-  @ApiProperty()
   access_controll?: string;
   @ApiProperty()
   access_level?: string;
@@ -24,8 +22,6 @@ export class PermissionGroupDto {
 export class UserGroupDto {
   @ApiProperty()
   id?: number;
-  @ApiProperty()
-  id?: string;
   @ApiProperty()
   name?: string;
   @ApiProperty()
@@ -47,8 +43,6 @@ export class UserGroupDto {
 export class OutputGroupDto {
   @ApiProperty()
   id?: number;
-  @ApiProperty()
-  id?: string;
   @ApiProperty()
   title?: string;
   @ApiProperty()
@@ -74,8 +68,6 @@ export class OutputGroupDto {
 export class OutputGroupNoRelationsDto {
   @ApiProperty()
   id?: number;
-  @ApiProperty()
-  id?: string;
   @ApiProperty()
   title?: string;
   @ApiProperty()

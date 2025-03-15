@@ -1,4 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Permission } from 'src/domain/modules/entities/permission.class';
 import { PermissionRepository } from 'src/domain/repositories/database/permission-repository';
 
@@ -11,15 +17,15 @@ export class GetAllPermissionUseCase {
   }
 }
 
-// export class GetAllPermissionService {
-//   constructor(
-//     private readonly getAllPermissionUseCase: GetAllPermissionUseCase,
-//   ) {}
+export class GetAllPermissionService {
+  constructor(
+    private readonly getAllPermissionUseCase: GetAllPermissionUseCase,
+  ) {}
 
-//   @UseInterceptors(ClassSerializerInterceptor)
-//   async execute(): Promise<Permission[]> {
-//     return this.getAllPermissionUseCase.execute().catch((err) => {
-//       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-//     });
-//   }
-// }
+  @UseInterceptors(ClassSerializerInterceptor)
+  async execute(): Promise<Permission[]> {
+    return this.getAllPermissionUseCase.execute().catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+}

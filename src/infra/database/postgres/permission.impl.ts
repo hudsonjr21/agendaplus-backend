@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Permission } from '../entities';
+import { Permission } from 'src/domain/modules/entities/permission.class';
+import { PermissionRepository } from 'src/domain/repositories/database/permission-repository';
 import { Repository, In } from 'typeorm';
-import { PermissionRepository } from '../../../../domain/repositories/access-control/permission-repository';
 
 export class PermissionImpl implements PermissionRepository {
   constructor(
