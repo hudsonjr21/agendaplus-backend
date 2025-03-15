@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { GroupRepository } from 'src/@core/domain/repositories/access-control/group-repository';
+import { Group } from 'src/domain/modules/entities/group.class';
+import { GroupRepository } from 'src/domain/repositories/database/group-repository';
 import { Repository, Like, In } from 'typeorm';
-import { Group } from '../entities';
 
 export class GroupImpl implements GroupRepository {
   constructor(
@@ -9,23 +9,23 @@ export class GroupImpl implements GroupRepository {
     private readonly groupRepository: Repository<Group>,
   ) {}
 
-  async getOne(uuid: string): Promise<Group> {
+  async getOne(id: number): Promise<Group> {
     return await this.groupRepository.findOne({
-      where: { uuid },
+      where: { id },
       relations: ['permission_group'],
     });
   }
 
   async getAll(
     payload: { description: string } | null,
-    uuid: string[] | null,
+    id: number[] | null,
   ): Promise<Group[]> {
     const query = this.groupRepository.createQueryBuilder('group');
     query.leftJoinAndSelect('group.permission_group', 'permission_group');
     query.leftJoinAndSelect('group.user_group', 'user_group');
-    if (uuid) {
+    if (id) {
       query.andWhere({
-        uuid: In(uuid),
+        id: In(id),
       });
     }
     if (payload) {
@@ -46,9 +46,9 @@ export class GroupImpl implements GroupRepository {
     return await this.groupRepository.save(group);
   }
 
-  async delete(uuid: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     await this.groupRepository.delete({
-      uuid,
+      id,
     });
   }
 }

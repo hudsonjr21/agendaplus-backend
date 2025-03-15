@@ -1,9 +1,9 @@
-import { GroupRepository } from 'src/@core/domain/repositories/access-control/group-repository';
-import { Group } from '../../../entities/group';
+import { GroupRepository } from 'src/domain/repositories/database/group-repository';
 import { GetOneGroupUseCase } from './get-one-group-usecase';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UpdateGroupUseCase } from 'src/@core/domain/modules/usecases/access-control/group/update-group-usecase';
+import { Injectable } from '@nestjs/common';
+import { Group } from 'src/domain/modules/entities/group.class';
 
+@Injectable()
 export class UpdateGroupUseCase {
   constructor(
     private readonly groupRepository: GroupRepository,
@@ -12,7 +12,7 @@ export class UpdateGroupUseCase {
 
   async execute(group: Group): Promise<Group> {
     return await this.getOneGroupUseCase
-      .execute(group.uuid)
+      .execute(group.id)
       .then((data) => {
         const upData = this.groupRepository.update({
           ...data,
@@ -29,27 +29,27 @@ export class UpdateGroupUseCase {
   }
 }
 
-@Injectable()
-export class UpdateGroupService {
-  constructor(private readonly updateGroupUseCase: UpdateGroupUseCase) {}
-  async execute(
-    uuid: string,
-    dataGroup: {
-      description: string;
-      status: boolean;
-    },
-  ) {
-    return await this.updateGroupUseCase
-      .execute({
-        uuid,
-        description: dataGroup.description,
-        status: dataGroup.status,
-      })
-      .catch((err) => {
-        throw new HttpException(
-          'Erro ao atualizar grupo. ' + err.message,
-          HttpStatus.BAD_REQUEST,
-        );
-      });
-  }
-}
+// export class UpdateGroupService {
+//   constructor(private readonly updateGroupUseCase: UpdateGroupUseCase) {}
+
+//   async execute(
+//     id: number,
+//     dataGroup: {
+//       description: string;
+//       status: boolean;
+//     },
+//   ) {
+//     return await this.updateGroupUseCase
+//       .execute({
+//         id,
+//         description: dataGroup.description,
+//         status: dataGroup.status,
+//       })
+//       .catch((err) => {
+//         throw new HttpException(
+//           'Erro ao atualizar grupo. ' + err.message,
+//           HttpStatus.BAD_REQUEST,
+//         );
+//       });
+//   }
+// }

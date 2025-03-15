@@ -11,8 +11,6 @@ export class PermissionDto2 {
   @ApiProperty()
   id: number;
   @ApiProperty()
-  uuid?: string;
-  @ApiProperty()
   access_controll: string;
   @ApiProperty()
   access_level: string;

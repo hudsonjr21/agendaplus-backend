@@ -1,26 +1,25 @@
-import { GroupRepository } from 'src/@core/domain/repositories/access-control/group-repository';
-import { Group } from '../../../entities/group';
-import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
-import { GetOneGroupUseCase } from 'src/@core/domain/modules/usecases/access-control/group/get-one-group-usecase';
+import { GroupRepository } from 'src/domain/repositories/database/group-repository';
+import { Group } from 'src/domain/modules/entities/group.class';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class GetOneGroupUseCase {
   constructor(private readonly groupRepository: GroupRepository) {}
 
-  async execute(uuid: string): Promise<Group> {
-    return await this.groupRepository.getOne(uuid);
+  async execute(id: number): Promise<Group> {
+    return await this.groupRepository.getOne(id);
   }
 }
 
-@Injectable()
-export class GetOneGroupService {
-  constructor(private readonly getOneGroupUseCase: GetOneGroupUseCase) {}
+// export class GetOneGroupService {
+//   constructor(private readonly getOneGroupUseCase: GetOneGroupUseCase) {}
 
-  async execute(uuid: string) {
-    return await this.getOneGroupUseCase.execute(uuid).catch((err) => {
-      throw new HttpException(
-        'Erro buscar grupo especificado. ' + err.message,
-        HttpStatus.BAD_REQUEST,
-      );
-    });
-  }
-}
+//   async execute(id: number) {
+//     return await this.getOneGroupUseCase.execute(id).catch((err) => {
+//       throw new HttpException(
+//         'Erro buscar grupo especificado. ' + err.message,
+//         HttpStatus.BAD_REQUEST,
+//       );
+//     });
+//   }
+// }

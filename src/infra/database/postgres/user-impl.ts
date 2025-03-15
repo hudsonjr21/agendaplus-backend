@@ -9,9 +9,9 @@ export class UserImpl implements UserRepository {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async getOne(uuid: string, status: boolean): Promise<User> {
+  async getOne(id: number, status: boolean): Promise<User> {
     return await this.userRepository.findOneOrFail({
-      where: { uuid, status },
+      where: { id, status },
       relations: ['user_group'],
     });
   }
@@ -48,7 +48,7 @@ export class UserImpl implements UserRepository {
     return await this.userRepository.save(user);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     this.userRepository.delete({ id });
   }
 }

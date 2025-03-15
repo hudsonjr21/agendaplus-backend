@@ -65,7 +65,7 @@ export class ApiController {
   @ApiResponse({ status: 200, type: OutputGroupDto })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/:id')
-  async getGroup(@Param('id') id: string): Promise<OutputGroupDto> {
+  async getGroup(@Param('id') id: number): Promise<OutputGroupDto> {
     return await this.getOneGroupService.execute(id);
   }
 
@@ -80,7 +80,7 @@ export class ApiController {
   }
 
   @Delete('delete/:id')
-  async deleteGroup(@Param('id') id: string): Promise<void> {
+  async deleteGroup(@Param('id') id: number): Promise<void> {
     return await this.deleteGroupService.execute(id);
   }
 
@@ -88,7 +88,7 @@ export class ApiController {
   @ApiBody({ type: OutputGroupDto })
   @Put('update/:id')
   async updateGroup(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() data: { description: string; status: boolean },
   ): Promise<InputUpdateGroupDto> {
     return await this.updateGroupService.execute(id, data);
@@ -97,7 +97,7 @@ export class ApiController {
   @ApiBody({ type: InputUpdateGroupPermissionDto })
   @Patch('update-permissions/:id')
   async updateGroupPermission(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() data: { permissions: string[] },
   ): Promise<any> {
     return await this.updateGroupPermissionService.execute(id, data);

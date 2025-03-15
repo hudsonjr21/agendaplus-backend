@@ -1,8 +1,8 @@
-import { UserRepository } from '../../../../repositories/access-control/user-repository';
-import { User } from '../../../entities/user';
-import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
-import { GetAllUserUseCase } from 'src/@core/domain/modules/usecases/access-control/user/get-all-user-usecase';
+import { Injectable } from '@nestjs/common';
+import { User } from 'src/domain/modules/entities/user.class';
+import { UserRepository } from 'src/domain/repositories/database/user-repository';
 
+@Injectable()
 export class GetAllUserUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 
@@ -11,16 +11,15 @@ export class GetAllUserUseCase {
   }
 }
 
-@Injectable()
-export class GetAllUsersService {
-  constructor(private readonly getAllUserUseCase: GetAllUserUseCase) {}
+// export class GetAllUsersService {
+//   constructor(private readonly getAllUserUseCase: GetAllUserUseCase) {}
 
-  async execute(query: { name: string; cpf: string }) {
-    return this.getAllUserUseCase.execute(query).catch((err) => {
-      throw new HttpException(
-        'Erro ao buscar usuarios. ' + err.message,
-        HttpStatus.BAD_REQUEST,
-      );
-    });
-  }
-}
+//   async execute(query: { name: string; cpf: string }) {
+//     return this.getAllUserUseCase.execute(query).catch((err) => {
+//       throw new HttpException(
+//         'Erro ao buscar usuarios. ' + err.message,
+//         HttpStatus.BAD_REQUEST,
+//       );
+//     });
+//   }
+// }

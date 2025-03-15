@@ -5,8 +5,8 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { DoesTheUserHavePermissionService } from '../services/does-the-user-have-permission.service';
 import { JwtService } from '@nestjs/jwt';
+import { DoesTheUserHavePermissionService } from '../does-the-user-have-permission-usecase';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -25,13 +25,13 @@ export class RolesGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     if (req.headers?.authorization) {
       const token = req.headers.authorization.split(' ')[1];
-      const user: { uuid: string; cpf: string; email: string } | any =
+      const user: { id: number; cpf: string; email: string } =
         this.jwtService.decode(token);
 
-      if (user?.uuid && user?.cpf && user?.email) {
+      if (user?.id && user?.cpf && user?.email) {
         const havePermission =
           await this.doesTheUserHavePermissionService.execute(
-            user.uuid,
+            user.id,
             requiredRoles,
           );
         if (!havePermission) {

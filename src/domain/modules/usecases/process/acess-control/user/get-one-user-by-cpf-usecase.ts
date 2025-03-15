@@ -1,5 +1,5 @@
-import { User } from '../../../entities/user';
-import { UserRepository } from '../../../../repositories/access-control/user-repository';
+import { User } from 'src/domain/modules/entities/user.class';
+import { UserRepository } from 'src/domain/repositories/database/user-repository';
 
 export class GetOneUserByCPFUseCase {
   constructor(private readonly userRepository: UserRepository) {}

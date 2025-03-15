@@ -9,13 +9,13 @@ export class PermissionImpl implements PermissionRepository {
     private readonly permissionRepository: Repository<Permission>,
   ) {}
 
-  async getAll(uuid?: []): Promise<Permission[]> {
+  async getAll(id?: []): Promise<Permission[]> {
     const query = this.permissionRepository
       .createQueryBuilder()
       .orderBy('created_at', 'DESC');
-    if (uuid) {
+    if (id) {
       query.where({
-        uuid: In(uuid === undefined ? [uuid] : uuid),
+        id: In(id === undefined ? [id] : id),
       });
     }
     return query.getMany();

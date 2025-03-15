@@ -31,8 +31,6 @@ export class UserGroupDto {
   @ApiProperty()
   id?: number;
   @ApiProperty()
-  uuid?: string;
-  @ApiProperty()
   title?: string;
   @ApiProperty()
   access_level?: string;

@@ -47,18 +47,18 @@ export class ApiController {
   }
 
   @ApiBody({ type: UpdateUserPermissionsDto })
-  @Patch('update-permissions/:uuid')
+  @Patch('update-permissions/:id')
   async updateUserPermissions(
-    @Param('uuid') uuid: string,
+    @Param('id') id: number,
     @Body() data: { permissions: string[] },
   ): Promise<void> {
-    return await this.updateUserPermissionService.execute(uuid, data);
+    return await this.updateUserPermissionService.execute(id, data);
   }
 
   @ApiResponse({ status: 200, type: GetUserDto })
-  @Get('/:uuid')
-  async getUser(@Param('uuid') uuid: string): Promise<GetUserDto> {
-    return await this.getOneUsersService.execute(uuid);
+  @Get('/:id')
+  async getUser(@Param('id') id: number): Promise<GetUserDto> {
+    return await this.getOneUsersService.execute(id);
   }
 
   @ApiBody({ type: UpdateStatusDto })
