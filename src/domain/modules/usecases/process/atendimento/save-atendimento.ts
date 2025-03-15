@@ -1,17 +1,22 @@
 import {
   Injectable,
   Logger,
-  BadRequestException,
   ConflictException,
+  NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { AtendimentoImpl } from 'src/infra/database/postgres/atendimento.impl';
+import { SaveCaixa } from 'src/domain/modules/usecases/process/caixa/save-caixa';
 import { Atendimento } from 'src/infra/database/entities/atendimento.entity';
 
 @Injectable()
 export class SaveAtendimento {
   private readonly logger = new Logger(SaveAtendimento.name);
 
-  constructor(private readonly atendimentoRepository: AtendimentoImpl) {}
+  constructor(
+    private readonly atendimentoRepository: AtendimentoImpl,
+    private readonly saveCaixa: SaveCaixa,
+  ) {}
 
   async getAllAtendimentos(): Promise<Atendimento[]> {
     this.logger.log('Fetching all atendimentos');
@@ -86,5 +91,28 @@ export class SaveAtendimento {
   async searchAtendimentosByDate(date: Date): Promise<Atendimento[]> {
     this.logger.log(`Searching atendimentos by date: ${date}`);
     return this.atendimentoRepository.searchByDate(date);
+  }
+
+  async verificarAtendimentos(): Promise<void> {
+    const atendimentos = await this.atendimentoRepository.getAll();
+    const agora = new Date();
+
+    for (const atendimento of atendimentos) {
+      if (atendimento.data < agora) {
+        await this.concluirAtendimento(atendimento.id);
+      }
+    }
+  }
+
+  async concluirAtendimento(atendimentoId: number): Promise<Atendimento> {
+    const atendimento = await this.atendimentoRepository.getById(atendimentoId);
+    if (!atendimento) {
+      throw new NotFoundException('Atendimento não encontrado');
+    }
+
+    const preco = atendimento.servico.preco;
+    await this.saveCaixa.addTransacaoEntrada(atendimentoId, preco);
+
+    return atendimento;
   }
 }

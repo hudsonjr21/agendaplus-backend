@@ -9,6 +9,7 @@ import { TransacaoImpl } from 'src/infra/database/postgres/transacao.impl';
 import { AtendimentoImpl } from 'src/infra/database/postgres/atendimento.impl';
 import { DespesaImpl } from 'src/infra/database/postgres/despesa.impl';
 import { Caixa } from 'src/infra/database/entities/caixa.entity';
+import { Transacao } from 'src/infra/database/entities/transacao.entity';
 
 @Injectable()
 export class SaveCaixa {
@@ -27,12 +28,18 @@ export class SaveCaixa {
     const totalSaidas = await this.transacaoRepository.sumByTipo('saida');
     const saldo = totalEntradas - totalSaidas;
 
-    await this.caixaRepository.updateSaldo({
-      totalEntradas,
-      totalSaidas,
-      saldo,
-      ultimaAtualizacao: new Date(),
-    });
+    const caixa = await this.caixaRepository.getAll();
+    if (caixa.length === 0) {
+      throw new NotFoundException('Caixa não encontrado');
+    }
+
+    const caixaAtual = caixa[0];
+    caixaAtual.totalEntradas = totalEntradas;
+    caixaAtual.totalSaidas = totalSaidas;
+    caixaAtual.saldo = saldo;
+    caixaAtual.ultimaAtualizacao = new Date();
+
+    await this.caixaRepository.update({ id: caixaAtual.id }, caixaAtual);
 
     this.logger.log('Saldo do caixa atualizado com sucesso');
   }
@@ -77,26 +84,27 @@ export class SaveCaixa {
   }
 
   async createCaixa(caixa: Partial<Caixa>): Promise<Caixa> {
+    this.logger.log('Creating new caixa');
     return await this.caixaRepository.save(caixa);
   }
 
   async getAllCaixas(): Promise<Caixa[]> {
-    return await this.caixaRepository.getAllCaixas();
+    this.logger.log('Fetching all caixas');
+    return await this.caixaRepository.getAll();
   }
 
-  async getCaixaById(id: number): Promise<Caixa> {
-    const caixa = await this.caixaRepository.getCaixaById(id);
-    if (!caixa) {
-      throw new NotFoundException(`Caixa com ID ${id} não encontrada`);
-    }
-    return caixa;
+  async getCaixaById(id: number): Promise<Caixa | null> {
+    this.logger.log(`Fetching caixa with ID: ${id}`);
+    return await this.caixaRepository.get({ id });
   }
 
-  async updateCaixa(id: number, caixa: Partial<Caixa>): Promise<Caixa> {
-    return await this.caixaRepository.updateCaixa(id, caixa);
+  async updateCaixa(id: number, caixa: Partial<Caixa>): Promise<any> {
+    this.logger.log(`Updating caixa with ID: ${id}`);
+    return await this.caixaRepository.update({ id }, caixa);
   }
 
-  async deleteCaixa(id: number): Promise<void> {
-    await this.caixaRepository.deleteCaixa(id);
+  async deleteCaixa(id: number): Promise<any> {
+    this.logger.log(`Deleting caixa with ID: ${id}`);
+    return await this.caixaRepository.delete(id.toString());
   }
 }

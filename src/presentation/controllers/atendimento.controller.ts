@@ -69,4 +69,9 @@ export class AtendimentoController {
   async deleteAtendimento(@Param('id') id: number): Promise<any> {
     return this.saveAtendimento.deleteAtendimento(id);
   }
+
+  @Post('verificar')
+  async verificarAtendimentos(): Promise<void> {
+    return this.saveAtendimento.verificarAtendimentos();
+  }
 }

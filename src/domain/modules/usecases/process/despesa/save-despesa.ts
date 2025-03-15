@@ -6,12 +6,16 @@ import {
 } from '@nestjs/common';
 import { DespesaImpl } from 'src/infra/database/postgres/despesa.impl';
 import { Despesa } from 'src/infra/database/entities/despesa.entity';
+import { SaveCaixa } from 'src/domain/modules/usecases/process/caixa/save-caixa';
 
 @Injectable()
 export class SaveDespesa {
   private readonly logger = new Logger(SaveDespesa.name);
 
-  constructor(private readonly despesaRepository: DespesaImpl) {}
+  constructor(
+    private readonly despesaRepository: DespesaImpl,
+    private readonly saveCaixa: SaveCaixa,
+  ) {}
 
   async getAllDespesas(): Promise<Despesa[]> {
     this.logger.log('Fetching all despesas');
@@ -28,6 +32,12 @@ export class SaveDespesa {
     try {
       const createdDespesa = await this.despesaRepository.save(despesa);
       this.logger.log(`Despesa created with ID: ${createdDespesa.id}`);
+
+      await this.saveCaixa.addTransacaoSaida(
+        createdDespesa.id,
+        createdDespesa.valor,
+      );
+
       return createdDespesa;
     } catch (error) {
       if (error instanceof ConflictException) {
