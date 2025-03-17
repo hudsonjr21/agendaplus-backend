@@ -8,10 +8,6 @@ import { ServicoController } from './controllers/servico.controller';
 import { DespesaController } from './controllers/despesa.controller';
 import { CaixaController } from './controllers/caixa.controller';
 import { TransacaoController } from './controllers/transacao.controller';
-import { AuthController } from './controllers/auth.controller';
-import { PermissionController } from './controllers/permission.controller';
-import { GroupController } from './controllers/group.controller';
-import { UserController } from './controllers/user.controller';
 
 @Module({
   imports: [DomainModule],
@@ -24,10 +20,6 @@ import { UserController } from './controllers/user.controller';
     DespesaController,
     CaixaController,
     TransacaoController,
-    AuthController,
-    PermissionController,
-    GroupController,
-    UserController,
   ],
   providers: [],
   exports: [],
